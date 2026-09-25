@@ -81,3 +81,70 @@ function GenerateAndObfuscateOnIsog(P_isog)
 end function;
 
 print "Template loaded. Waiting for isogeny constants...";
+/*
+----------------------------------------------------------------
+ RECEIVING END: Reconstructs the point on the target curve
+----------------------------------------------------------------
+*/
+function ReconstructAndMap2Target(u, v)
+    // 1. Reconstruct Isogenous Point
+    P_u_isog := E_isog!SSWUHash2Point(u);
+    P_v_isog := E_isog!SSWUHash2Point(v);
+    P_isog   := P_u_isog + P_v_isog;
+    
+    // 2. Map to Target Curve via 2-Isogeny
+    P_target := Isogeny2Target(P_isog);
+    
+    return E_target!P_target;
+end function;
+
+/*
+----------------------------------------------------------------
+Runtime Test & Benchmark
+----------------------------------------------------------------
+*/
+print "\n--- Runtime Test & Benchmark ---";
+
+// Generate a random test point on the isogenous curve for benchmarking
+PublicKey_isog := Random(E_isog);
+while PublicKey_isog eq Identity do
+    PublicKey_isog := Random(E_isog);
+end while;
+
+printf "Target Curve:    %o\n", E_target;
+printf "Isogenous Curve: %o\n", E_isog;
+printf "Running 1000 iterations for 2-Isogeny Obfuscation...\n";
+
+NumberOfAttempts := 1000; 
+ObfuscateCls := 0;  
+DeObfuscateCls := 0; 
+i := 0;
+
+repeat
+    i +:= 1;
+
+    // --- Transmitting End (Obfuscation) ---
+    t_time := ClockCycles(); 
+    u, v := GenerateAndObfuscateOnIsog(PublicKey_isog);
+    CyclesSpent := ClockCycles() - t_time;
+    ObfuscateCls +:= CyclesSpent;
+
+    // --- Receiving End (Deobfuscation) ---
+    t_time := ClockCycles(); 
+    PublicKey_target := ReconstructAndMap2Target(u, v);
+    CyclesSpent := ClockCycles() - t_time;
+    DeObfuscateCls +:= CyclesSpent;
+
+    // Optional Check: verify mapping correctness
+    PublicKey_target_real := E_target!Isogeny2Target(PublicKey_isog);
+    if (PublicKey_target ne PublicKey_target_real) then 
+        printf "\nFail! Discrepancy at iteration %o\n", i; 
+        break; 
+    end if;
+until (i eq NumberOfAttempts);
+
+print "\n__________________ Clock cycles (BLS12-479+ 2-Isogeny) ___________________";
+Res1 := ObfuscateCls div NumberOfAttempts;
+print " \nObfuscation:  ", Res1;
+Res2 := DeObfuscateCls div NumberOfAttempts;
+print " \nDeobfuscation:", Res2;
