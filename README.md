@@ -23,18 +23,28 @@ By reducing the algebraic complexity to a trivial quadratic preimage solver, the
 
 ## 📂 Repository Structure
 
+*   `bls12_479_search.m` — Algorithmic parameter search script incorporating a steganographic filter to discover optimal BLS12 curves (yields BLS12-479+).
 *   `bls12_479_isogeny_generator.m` — Automated generator for the dual 2-isogeny constants over BLS12-479+, utilizing explicit Vélu's formulas for the 2-torsion kernel.
 *   `bls12_479_g1_obfuscation.m` — The complete Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-479+, including the $10^5$-iteration hardware benchmark loop.
+*   `bls12_381_kernel_search.m` — Constructive extraction and verification of the $\mathbb{F}_p$ 11-isogeny kernel matching the RFC 9380 target curve for standard BLS12-381.
 *   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the 11-isogeny on the standard BLS12-381 curve.
-*   `bls12_381_inverse_11_isogeny.m` — Constructive extraction of the $\mathbb{F}_p$ 11-isogeny kernel matching the RFC 9380 target curve.
 
 ## ⚙️ Quick Start
 
 The scripts are written for the [Magma Computational Algebra System](http://magma.maths.usyd.edu.au/magma/). To reproduce the hardware benchmarks locally, execute the following from your terminal:
 
 ```bash
-# Run the 2-Isogeny Benchmark for BLS12-479+
+# 1. Run the steganographic filter search for the optimal curve
+magma bls12_479_search.m
+
+# 2. Extract the 11-isogeny kernel for standard BLS12-381
+magma bls12_381_kernel_search.m
+
+# 3. Generate the exact dual 2-isogeny constants for BLS12-479+
+magma bls12_479_isogeny_generator.m
+
+# 4. Run the 100,000-iteration hardware benchmark for BLS12-479+ (2-Isogeny)
 magma bls12_479_g1_obfuscation.m
 
-# Run the 11-Isogeny Baseline for BLS12-381
+# 5. Run the baseline hardware benchmark for BLS12-381 (11-Isogeny)
 magma bls12_381_g1_obfuscation.m
