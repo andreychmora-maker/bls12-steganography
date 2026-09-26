@@ -29,7 +29,7 @@ for x in targets do
     _ := IsSquare(x^3 + 6);
     
     // Constant-time tie-breaking & forward validation
-    // Используем JacobiSymbol для обхода проверки p на простоту
+    // We use JacobiSymbol to bypass the primality test for p.
     _ := JacobiSymbol(Integers()!x, p);
     _ := JacobiSymbol(Integers()!(x+1), p);
     _ := JacobiSymbol(Integers()!(x+2), p);
