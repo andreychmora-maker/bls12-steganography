@@ -18,8 +18,7 @@ print "==============================================================\n";
   1. Direct SW Inversion (Isogeny-Free)
   To invert a direct SW map in strict constant time, the algorithm must 
   fully evaluate 3 candidate branches (extracting roots for N(u) - x*D(u) = 0) 
-  and execute forward validation checks (Legendre symbols) to securely 
-  resolve tie-breaking. This strictly consumes >= 6 heavy field operations.
+  and execute forward validation checks (Jacobi/Legendre symbols).
 */
 print "--- 1. Direct SW Inversion Profile (Koshelev/Chavez-Saab) ---";
 t0 := Cputime();
@@ -29,10 +28,11 @@ for x in targets do
     _ := IsSquare(x^3 + 5);
     _ := IsSquare(x^3 + 6);
     
-    // Constant-time tie-breaking & forward validation (Legendre checks)
-    _ := LegendreSymbol(Integers()!x, p);
-    _ := LegendreSymbol(Integers()!(x+1), p);
-    _ := LegendreSymbol(Integers()!(x+2), p);
+    // Constant-time tie-breaking & forward validation
+    // Используем JacobiSymbol для обхода проверки p на простоту
+    _ := JacobiSymbol(Integers()!x, p);
+    _ := JacobiSymbol(Integers()!(x+1), p);
+    _ := JacobiSymbol(Integers()!(x+2), p);
 end for;
 t_sw := Cputime(t0);
 printf "Total Time (%o iterations) : %o seconds\n", iters, t_sw;
