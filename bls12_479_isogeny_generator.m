@@ -1,4 +1,3 @@
-cat << 'EOF' > bls12_479_g1_obfuscation.m
 /* Obfuscation of the public key for BLS12-479+ using Elligator Squared (2-Isogeny Bridge) */
 
 p := 1040582850105330743815570414239668597581975900197275493095847470017583224665441180782578049215009464174278151947833029365685675660572997417552727;
@@ -7,41 +6,45 @@ Fp := FiniteField(p);
 B_target := Fp!1;
 A_isog   := Fp!-15;
 B_isog   := Fp!22;
-x0       := Fp!-1;
-t        := Fp!3;
 
 E_target := EllipticCurve([Fp | 0, B_target]);
 E_isog   := EllipticCurve([Fp | A_isog, B_isog]);
 Identity := E_target!0;
 
+// Dual Isogeny mapping (E' -> E) + Isomorphism
 function Isogeny2Target(P_isog)
     if P_isog eq E_isog!0 then return Identity; end if;
     x := P_isog[1]; y := P_isog[2];
-    x_den := x - x0;
+    
+    x_den := x - 2; // Kernel of dual isogeny is x'_0 = 2
     if x_den eq 0 then return Identity; end if;
     
-    x_num := x^2 - x0*x + t;
-    x_new := x_num / x_den;
-    y_new := y * (x_den^2 - t) / (x_den^2);
+    // Velu to E'': y^2 = x^3 + 64 (where t' = -3)
+    X_isog := x - 3 / x_den;
+    Y_isog := y + 3 * y / (x_den^2);
     
-    return [x_new, y_new];
+    // Isomorphism to E_target: y^2 = x^3 + 1 (scaling by u^2=4, u^3=8)
+    return [X_isog / 4, Y_isog / 8];
 end function;
 
+// Inverse of Dual Isogeny (solving quadratic for Obfuscation)
 function BasePreimage(P_target)
     x_t := P_target[1];
-    B_coef := -(x_t + x0);
-    C_coef := t + x_t*x0;
+    
+    // Solves (x')^2 - (4*x_t + 2)*x' + (8*x_t - 3) = 0
+    B_coef := -(4 * x_t + 2);
+    C_coef := 8 * x_t - 3;
     Delta := B_coef^2 - 4*C_coef;
     
     if not IsSquare(Delta) then return false, Fp!0; end if;
     root := Sqrt(Delta);
-    x_cand1 := (-B_coef + root) / 2;
-    return true, x_cand1; 
+    return true, (-B_coef + root) / 2; 
 end function;
 
 function GenerateAndObfuscateOnIsog(P_isog)  
     Success := false;
     while not Success do
+        // Simulate obfuscation attempt
         Success, x_cand := BasePreimage(Isogeny2Target(P_isog));
     end while;
     return Fp!1, Fp!2; 
@@ -78,4 +81,3 @@ print "\n__________________ Clock cycles (BLS12-479+ 2-Isogeny) ________________
 print " \nObfuscation:  ", ObfuscateCls div NumberOfAttempts;
 print " \nDeobfuscation:", DeObfuscateCls div NumberOfAttempts;
 quit;
-EOF
