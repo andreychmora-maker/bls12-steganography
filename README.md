@@ -25,11 +25,12 @@ By reducing the algebraic complexity to a trivial quadratic preimage solver, the
 *   `bls12_479_isogeny_generator.m` — Automated generator for the dual 2-isogeny constants over BLS12-479+, utilizing explicit Vélu's formulas for the 2-torsion kernel.
 *   `bls12_479_g1_obfuscation.m` — The complete Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-479+, including the $10^5$-iteration hardware benchmark loop.
 *   `bls12_381_kernel_search.m` — Constructive extraction and verification of the $\mathbb{F}_p$ 11-isogeny kernel matching the RFC 9380 target curve for standard BLS12-381.
-*   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the 11-isogeny on the standard BLS12-381 curve.
+*   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the 11-isogeny for $\mathbb{G}_1$ on the standard BLS12-381 curve.
+*   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper for $\mathbb{G}_2$ signatures on standard BLS12-381, evaluating the explicit inverse 3-isogeny over the $\mathbb{F}_{p^2}$ extension field.
 
 ## ⚙️ Quick Start
 
-The scripts are written for the [Magma Computational Algebra System](http://magma.maths.usyd.edu.au/magma/). To reproduce the hardware benchmarks locally, execute the following from your terminal:
+The scripts are written for the [Magma Computational Algebra System](http://magma.maths.usyd.edu.au/magma/). To reproduce the parameter searches, constant generation, and hardware benchmarks locally, execute the following commands from your terminal:
 
 ```bash
 # 1. Run the steganographic filter search for the optimal curve
@@ -44,8 +45,11 @@ magma bls12_479_isogeny_generator.m
 # 4. Run the 100,000-iteration hardware benchmark for BLS12-479+ (2-Isogeny)
 magma bls12_479_g1_obfuscation.m
 
-# 5. Run the baseline hardware benchmark for BLS12-381 (11-Isogeny)
+# 5. Run the baseline hardware benchmark for BLS12-381 G1 (11-Isogeny)
 magma bls12_381_g1_obfuscation.m
+
+# 6. Run the hardware benchmark for BLS12-381 G2 signatures (3-Isogeny)
+magma bls12_381_g2_obfuscation.m
 ```
 
 📚 Academic Citation
