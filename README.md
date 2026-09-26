@@ -66,7 +66,7 @@ magma direct_sw_bottleneck_simulation.m
 📚 Academic Citation
 
 If you utilize these scripts or the BLS12-479+ curve parameters in your research,
-please cite the associated dataset/software archive:
+please cite the associated archive:
 ```bash
 @misc{chmora2026bls12steganography,
   author       = {Andrey Chmora},
