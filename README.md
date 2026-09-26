@@ -12,11 +12,11 @@ This repository provides the open-source Magma computational algebra scripts acc
 ### 1. Isogeny Bridge: BLS12-381 vs. BLS12-479+
 To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed BLS12-479+ curve (which natively supports a 2-isogeny bridge) within the **Elligator Squared** framework.
 
-| Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field |
-| :--- | :--- | :--- | :--- | :--- |
-| **BLS12-381** (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit |
-| **BLS12-479+** (Proposed) | 2-isogeny | **~947,000 cycles** | **~56,000 cycles** | 479-bit |
-| *Performance Gain* | | *~4.5x Speedup* | *~25.7x Speedup* | |
+| Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **BLS12-381** (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit | ~128-bit |
+| **BLS12-479+** (Proposed) | 2-isogeny | **~947,000 cycles** | **~56,000 cycles** | 479-bit | **~160-bit** |
+| *Performance Gain* | | *~4.5x Speedup* | *~25.7x Speedup* | | *+32 bits* |
 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
