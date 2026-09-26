@@ -27,6 +27,7 @@ By reducing the algebraic complexity to a trivial quadratic preimage solver, the
 *   `bls12_381_kernel_search.m` — Constructive extraction and verification of the F_p 11-isogeny kernel matching the RFC 9380 target curve for standard BLS12-381.
 *   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the explicit inverse 11-isogeny for G1 public keys on the standard BLS12-381 curve.
 *   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper evaluating the explicit inverse 3-isogeny for G2 signatures on the standard BLS12-381 curve over the F_p² extension field.
+*   `direct_sw_bottleneck_simulation.m` — Empirical simulation demonstrating the ~6x multi-branch computational penalty of direct Shallue-van de Woestijne (SW) inversions compared to the proposed isogeny-based pipeline.
 
 ## ⚙️ Quick Start
 
@@ -50,6 +51,9 @@ magma bls12_381_g1_obfuscation.m
 
 # 6. Run the hardware benchmark for BLS12-381 G2 signatures (3-Isogeny)
 magma bls12_381_g2_obfuscation.m
+
+# 7. Simulate the computational bottleneck of Direct SW Inversion
+magma direct_sw_bottleneck_simulation.m
 ```
 
 📚 Academic Citation
