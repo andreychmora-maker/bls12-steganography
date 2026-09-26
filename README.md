@@ -1,5 +1,3 @@
-# bls12-steganography
-
 # BLS12 Steganography: Point Obfuscation via Explicit Inverse Isogenies
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22736944.svg)](https://doi.org/10.5281/zenodo.22736944)
@@ -48,3 +46,20 @@ magma bls12_479_g1_obfuscation.m
 
 # 5. Run the baseline hardware benchmark for BLS12-381 (11-Isogeny)
 magma bls12_381_g1_obfuscation.m
+```
+
+📚 Academic Citation
+
+If you utilize these scripts or the BLS12-479+ curve parameters in your research,
+please cite the associated dataset/software archive:
+```bash
+@misc{chmora2024bls12steganography,
+  author       = {Andrey Chmora},
+  title        = {BLS12 Steganography: Point Obfuscation via Explicit Inverse Isogenies},
+  month        = {Sep},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.22736944},
+  url          = {[https://doi.org/10.5281/zenodo.22736944](https://doi.org/10.5281/zenodo.22736944)}
+}
+```
