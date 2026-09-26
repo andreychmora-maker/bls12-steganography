@@ -7,9 +7,10 @@ This repository provides the open-source Magma computational algebra scripts acc
 
 ## 🚀 Empirical Performance Benchmarks
 
-To empirically validate the steganographic optimization, we conducted hardware benchmarks simulating the **Elligator Squared** obfuscation framework. The evaluation compares the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed BLS12-479+ curve (which natively supports a 2-isogeny bridge). 
+**Unified Benchmark Environment:** All empirical simulations and cycle counts presented in this repository were evaluated on a single hardware and software platform: a 2.7 GHz Quad-Core Intel Core i7 (MacBookPro13,3) with 16 GB RAM, running the Magma Computational Algebra System (V2.29-6).
 
-**Hardware Environment:** 2.7 GHz Quad-Core Intel Core i7 (MacBookPro13,3), 16 GB RAM.
+### 1. Isogeny Bridge: BLS12-381 vs. BLS12-479+
+To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed BLS12-479+ curve (which natively supports a 2-isogeny bridge) within the **Elligator Squared** framework.
 
 | Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field |
 | :--- | :--- | :--- | :--- | :--- |
