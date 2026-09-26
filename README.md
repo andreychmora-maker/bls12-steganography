@@ -20,8 +20,8 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
-### 🚨 The Direct SW Bottleneck
-While recent literature optimizes the *forward* Hash-to-Curve mapping for $j \in \{0, 1728\}$, steganography requires the exact inverse (Point-to-Uniform). Simulating a strict constant-time extraction loop (100,000 iterations over the 381-bit base field executed on a MacBookPro13,3 with a 2.7 GHz Quad-Core Intel Core i7 and 16 GB RAM using Magma V2.29-6) reveals the multi-branch penalty of direct Shallue-van de Woestijne (SW) encodings:
+### 2. The Direct SW Bottleneck
+While recent literature optimizes the *forward* Hash-to-Curve mapping for $j \in \{0, 1728\}$, steganography requires the exact inverse (Point-to-Uniform). Simulating a strict constant-time extraction loop (100,000 iterations over the 381-bit base field) reveals the multi-branch penalty of direct Shallue-van de Woestijne (SW) encodings:
 
 *   **Direct SW Inversion:** ~11.14 seconds (Requires evaluating 3 branches + constant-time Jacobi validations)
 *   **Isogeny-Based SSWU:** ~1.89 seconds (0 isogeny roots + exactly 1 SSWU root)
