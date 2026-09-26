@@ -68,7 +68,7 @@ magma direct_sw_bottleneck_simulation.m
 If you utilize these scripts or the BLS12-479+ curve parameters in your research,
 please cite the associated dataset/software archive:
 ```bash
-@misc{chmora2024bls12steganography,
+@misc{chmora2026bls12steganography,
   author       = {Andrey Chmora},
   title        = {Steganographic Point Obfuscation via Explicit Inverse Isogenies for $j \in \{0, 1728\}$},
   month        = {Sep},
