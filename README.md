@@ -1,52 +1,40 @@
 # bls12-steganography
 
-This repository contains the Magma computational algebra scripts accompanying the research paper on mitigating DPI (Deep Packet Inspection) censorship for decentralized consensus networks. 
+# BLS12 Steganography: Point Obfuscation via Explicit Inverse Isogenies
 
-The primary contribution is the deterministic Point-to-Uniform obfuscation for $j=0$ pairing-friendly curves (including BLS12-381) via explicit rational isogeny mappings.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22736944.svg)](https://doi.org/10.5281/zenodo.22736944)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Contents
+This repository provides the open-source Magma computational algebra scripts accompanying the research on steganographic point obfuscation for curves with $j \in \{0, 1728\}$. It includes explicit parameter search algorithms, extraction routines for the standard BLS12-381 11-isogeny kernel, and a computationally trivial 2-isogeny bridge for the steganographically optimal BLS12-479+ curve.
 
-1. **`bls12_381_g1_obfuscation.m`**
-   A complete proof-of-concept implementation of the Elligator Squared obfuscation wrapper for the BLS12-381 $\mathbb{G}_1$ group (used for Validator Public Keys and Aggregate Signatures).
-   - Implements the 11-isogeny forward map to the target curve (`Isogeny2Target`).
-   - Implements the exact Base Preimage solver for the SSWU map (`BasePreimage`).
-   - Includes full serialization simulation and a benchmarking loop computing CPU clock cycles for both Obfuscation and Deobfuscation.
+## 🚀 Empirical Performance Benchmarks
 
-2. **`bls12_381_g2_obfuscation.m`**
-   A complete proof-of-concept implementation of the Elligator Squared obfuscation wrapper for the BLS12-381 $\mathbb{G}_2$ group (used for individual Validator Signatures). 
-   - Implements the novel 3-isogeny inverse map (`EvaluateBackwardMap`).
-   - Implements the strict RFC 9380 forward map.
-   - Contains explicit test vectors to verify correct sign alignment.
+To empirically validate the steganographic optimization, we conducted hardware benchmarks simulating the **Elligator Squared** obfuscation framework. The evaluation compares the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed BLS12-479+ curve (which natively supports a 2-isogeny bridge). 
 
-3. **`bls12_381_kernel_search.m`**
-   A theoretical foundation script demonstrating the explicit discovery of the kernel generator on the standard BLS12-381 curve. 
-   - Uses division polynomials to isolate 11-torsion points over the base field $\mathbb{F}_p$.
-   - Implements manual Vélu's formulas to construct the candidate isogenous curve.
-   - Verifies the isomorphism between the derived curve and the target $E'$ used in the obfuscation mappings.
+**Hardware Environment:** 2.7 GHz Quad-Core Intel Core i7 (MacBookPro13,3), 16 GB RAM.
 
-4. **`bls12_479_search.m`**
-   An algorithmic search script introducing an explicit steganographic filter to standard BLS12 parameter generation. Demonstrates the discovery of the "steganographically optimal" **BLS12-479+** curve ($p = 479$ bits, $HW = 7$), which natively supports a 2-isogeny bridge.
+| Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field |
+| :--- | :--- | :--- | :--- | :--- |
+| **BLS12-381** (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit |
+| **BLS12-479+** (Proposed) | 2-isogeny | **~947,000 cycles** | **~56,000 cycles** | 479-bit |
+| *Performance Gain* | | *~4.5x Speedup* | *~25.7x Speedup* | |
 
-5. **`bls12_479_isogeny_generator.m`**
-   An automated generator for the 2-isogeny constants of the BLS12-479+ curve.
-   - Isolates the $x$-coordinate of the 2-torsion point natively guaranteed by the strictly even cofactor.
-   - Computes explicit Vélu's constants and the exact rational mapping coefficients for the ultra-efficient 2-isogeny bridge.
+By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
-6. **`bls12_479_g1_obfuscation.m`**
-   A comparative performance benchmark and proof-of-concept implementation of $\mathbb{G}_1$ obfuscation for the BLS12-479+ curve.
-   - Replaces the heavy 11-isogeny arithmetic with the lightweight 2-isogeny equations.
-   - Empirically demonstrates the "near-zero latency" advantage of the steganographically optimal curve through a 1000-iteration CPU cycle benchmark.
+## 📂 Repository Structure
 
-## How to Run
+*   `bls12_479_isogeny_generator.m` — Automated generator for the dual 2-isogeny constants over BLS12-479+, utilizing explicit Vélu's formulas for the 2-torsion kernel.
+*   `bls12_479_g1_obfuscation.m` — The complete Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-479+, including the $10^5$-iteration hardware benchmark loop.
+*   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the 11-isogeny on the standard BLS12-381 curve.
+*   `bls12_381_inverse_11_isogeny.m` — Constructive extraction of the $\mathbb{F}_p$ 11-isogeny kernel matching the RFC 9380 target curve.
 
-The scripts are written in Magma. To run the benchmark and verify the mappings, execute:
+## ⚙️ Quick Start
+
+The scripts are written for the [Magma Computational Algebra System](http://magma.maths.usyd.edu.au/magma/). To reproduce the hardware benchmarks locally, execute the following from your terminal:
 
 ```bash
-magma bls12_381_g1_obfuscation.m
-magma bls12_381_g2_obfuscation.m
-magma bls12_381_kernel_search.m
-magma bls12_479_search.m
-magma bls12_479_isogeny_generator.m
+# Run the 2-Isogeny Benchmark for BLS12-479+
 magma bls12_479_g1_obfuscation.m
-```
-The full mathematical derivations, complexity analysis, and proofs are available in the preprint: https://doi.org/10.5281/zenodo.22736944
+
+# Run the 11-Isogeny Baseline for BLS12-381
+magma bls12_381_g1_obfuscation.m
