@@ -559,10 +559,10 @@ function Verify(Message, PublicKey, Signature)
 
     // 3. Now the comparison is valid
     //return e1 eq e2;
-/*
-    return Pairing(Signature, G_ext, q) ^ final_exponent eq \
+
+    //return Pairing(Signature, G_ext, q) ^ final_exponent eq \
                 Pairing(AnyPoint, PublicKey, q) ^ final_exponent;
-*/
+
     return Pairing(Signature, G_ext, q) eq Pairing(AnyPoint, PublicKey, q);
 
 end function;
