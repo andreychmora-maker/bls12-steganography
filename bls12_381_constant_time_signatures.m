@@ -219,7 +219,7 @@ and (q * G_ext eq Identity_ext);
 // Optimal Ate (R-ate) pairing over sextic twists is strictly deployed to minimize 
 // Miller loop iterations and bypass heavy Fp12 arithmetic.
 
-Pairing := AteqPairing; //ReducedTatePairing; //TatePairing;
+Pairing := ReducedTatePairing; //AteqPairing; //TatePairing;
 
 // --- Define the final exponent ---
 // final_exponent := (p^12 - 1) div q;
@@ -536,7 +536,7 @@ function Sign(Message, SecretKey)
     //AnyPoint := E_extended!AnyPoint;
     return SecretKey * E_extended!AnyPoint;
 end function;
-/*
+
 function Verify(Message, PublicKey, Signature)
     //AnyPoint := SimplifiedSWUHashToPoint(Message);
     // assert AnyPoint in E_isog; 
@@ -566,8 +566,7 @@ function Verify(Message, PublicKey, Signature)
     return Pairing(Signature, G_ext, q) eq Pairing(AnyPoint, PublicKey, q);
 
 end function;
-*/
-
+/*
 function Verify(Message, PublicKey, Signature)
     AnyPoint := E_extended!(Cofactor * E_target!IsogenyToTarget\
     (SimplifiedSWUHashToPoint(Message))); // Clearing the cofactor
@@ -583,7 +582,7 @@ function Verify(Message, PublicKey, Signature)
     // 2. The comparison is valid since the pairing is already reduced
     return e1 eq e2;
 end function;
-
+*/
 print "\n______________ Executing BLS Scheme _______________";
 
 // 1. Generate Keys
