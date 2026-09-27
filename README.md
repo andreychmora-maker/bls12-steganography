@@ -77,7 +77,7 @@ magma bls12_381_g2_obfuscation.m
 magma direct_sw_bottleneck_simulation.m
 
 # 8. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
-bls12_381_constant_time_signatures.m
+magma bls12_381_constant_time_signatures.m
 ```
 
 📚 Academic Citation
