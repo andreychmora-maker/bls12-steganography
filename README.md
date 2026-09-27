@@ -43,7 +43,7 @@ The simulation highlights the severe performance penalties of achieving artifici
 
 *   `bls12_479_search.m` — Algorithmic parameter search script incorporating a steganographic filter to discover optimal BLS12 curves (yields BLS12-479+).
 *   `bls12_479_isogeny_generator.m` — Automated generator for the dual 2-isogeny constants over BLS12-479+, utilizing explicit Vélu's formulas for the 2-torsion kernel.
-*   `bls12_479_g1_obfuscation.m` — The complete Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-479+, including the 10^5-iteration hardware benchmark loop.
+*   `bls12_479_g1_obfuscation.m` — The complete Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-479+, including the $10^5$-iteration hardware benchmark loop.
 *   `bls12_381_kernel_search.m` — Constructive extraction and verification of the $\mathbb{F}_p$ 11-isogeny kernel matching the RFC 9380 target curve for standard BLS12-381.
 *   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the explicit inverse 11-isogeny for $\mathbb{G}_1$ public keys on the standard BLS12-381 curve.
 *   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper evaluating the explicit inverse 3-isogeny for $\mathbb{G}_2$ signatures on the standard BLS12-381 curve over $\mathbb{F}_q$ extension field, where $q=p^2$.
