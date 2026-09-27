@@ -21,18 +21,20 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
 ### 2. The Direct SW Bottleneck
-While recent literature optimizes the *forward* Hash-to-Curve mapping for $j \in \{0, 1728\}$, steganography requires the exact inverse (Point-to-Uniform). Simulating a strict constant-time extraction loop (100,000 iterations over the 381-bit base field) reveals the multi-branch penalty of direct Shallue-van de Woestijne (SW) encodings:
+For the *forward* Hash-to-Curve mapping on curves with $j \in \{0, 1728\}$, recent direct encodings by Koshelev et al. (including SwiftEC) represent the absolute progressive state-of-the-art. These approaches elegantly reduce the forward evaluation to a single field exponentiation, completely bypassing the need for auxiliary isogenies.
+
+However, steganography strictly requires the exact inverse operation (Point-to-Uniform). Simulating a strict constant-time extraction loop (100,000 iterations over the 381-bit base field) reveals the multi-branch penalty of inverting these direct Shallue-van de Woestijne (SW) encodings:
 
 *   **Direct SW Inversion:** ~11.14 seconds (Requires evaluating 3 branches + constant-time Jacobi validations)
 *   **Isogeny-Based SSWU:** ~1.89 seconds (0 isogeny roots + exactly 1 SSWU root)
 *   **Result:** The proposed isogeny pipeline is **~5.89x faster** for steganographic obfuscation, perfectly corroborating the theoretical algebraic bounds.
 
 ### ⏱️ Constant-Time Execution & The Steganographic Boundary
-The `bls12_381_constant_time_signatures.m` script models the *forward* Hash-to-Curve process, generating and verifying a BLS digital signature. In this scenario, a message is hashed to a scalar and deterministically mapped to a valid curve point via the SSWU algorithm and an isogeny bridge. For the task of *creating* a signature, this pipeline is entirely self-sufficient, guarantees 100% success, and does not require the Elligator Squared framework.
+The `bls12_381_constant_time_signatures.m` script models the *forward* Hash-to-Curve process, generating and verifying a BLS digital signature. In this scenario, a message is hashed to a scalar and deterministically mapped to a valid curve point via the SSWU algorithm and an isogeny bridge. 
 
-However, generating a signature and *steganographically hiding* it for network transmission are two fundamentally different tasks that enforce a strict architectural boundary:
+Generating a signature and *steganographically hiding* it for network transmission are two fundamentally different tasks that enforce a strict architectural boundary:
 
-*   **Generation (Hash-to-Curve):** Deterministically maps uniform data to a curve point. The script demonstrates that achieving constant-time execution via bounded stochastic loops (Try-and-Increment) is computationally heavy and introduces non-zero failure probabilities. By contrast, our deterministic SSWU + Isogeny method yields a **~91.2% performance gain** over bounded Try-and-Increment (at 10,000 iterations) and a **~58.5% gain** over unbounded trivial hashing.
+*   **Generation (Hash-to-Curve):** Deterministically maps uniform data to a curve point. While the direct SW encodings by Koshelev et al. stand as the most progressive and optimal approach for this specific *forward* task, our script demonstrates that even our SSWU + Isogeny method yields a **~91.2% performance gain** over bounded Try-and-Increment (at 10,000 iterations) and a **~58.5% gain** over unbounded trivial hashing.
 *   **Obfuscation (Point-to-Uniform):** Once the message point is multiplied by the secret key, the resulting signature becomes an arbitrary point on the curve. Transmitting this point in plaintext exposes algebraic invariants to Deep Packet Inspection (DPI). To achieve indistinguishability, the point must be mapped back to uniform noise. 
 
 **The Mathematical Necessity of Elligator Squared & The Pick-and-Check Reality:**
@@ -40,7 +42,7 @@ The SSWU algorithm is *not surjective*—its image covers only about 50% of the 
 
 The **Elligator Squared** framework resolves this non-surjectivity by representing any target point as the sum of two new points ($\grave{Q} = P_u + P_v$), both of which are mathematically guaranteed to have SSWU preimages ($u$ and $v$). However, finding this valid pair natively reduces Elligator Squared to a probabilistic **"Pick-and-Check"** algorithm. 
 
-*The ensuing consequence:* To prevent timing side-channels during this probabilistic extraction, the Pick-and-Check loop must be artificially bounded to a fixed, constant number of iterations $N$. This is exactly where the computational bottleneck of direct SW encodings ($\ge 7$ heavy exponentiations per iteration) becomes catastrophic for high-throughput networks. By integrating Elligator Squared with our explicit inverse isogenies, the cost of each Pick-and-Check iteration drops to exactly 1 quadratic root extraction. Thus, while Hash-to-Curve alone suffices for signature generation, the Elligator Squared Pick-and-Check loop—powered by our inverse isogenies—is strictly mandatory at the transport layer to ensure *any* signature can be obfuscated securely and efficiently.
+*The ensuing consequence:* To prevent timing side-channels during this probabilistic extraction, the Pick-and-Check loop must be artificially bounded to a fixed, constant number of iterations $N$. This is exactly where the computational bottleneck of direct SW encodings ($\ge 7$ heavy exponentiations per iteration) becomes catastrophic for high-throughput networks. By integrating Elligator Squared with our explicit inverse isogenies, the cost of each Pick-and-Check iteration drops to exactly 1 quadratic root extraction. Thus, while state-of-the-art direct Hash-to-Curve methods excel at signature generation, the Elligator Squared Pick-and-Check loop—powered by our inverse isogenies—is strictly mandatory at the transport layer to ensure *any* signature can be obfuscated securely and efficiently.
 
 ## 📂 Repository Structure
 
