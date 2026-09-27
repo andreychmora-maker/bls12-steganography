@@ -33,9 +33,9 @@ The `bls12_381_constant_time_signatures.m` script empirically substantiates the 
 
 The simulation highlights the severe performance penalties of achieving artificial constant-time execution via bounded stochastic loops:
 
-*   **Try-and-Increment (Constant-Time):** Relies on a rigid, fixed-iteration loop (e.g., a limit of 20 cycles) to thwart timing side-channel attacks. This approach is computationally heavy and inevitably introduces a non-zero failure probability.
+*   **Try-and-Increment (Constant-Time):** Relies on a rigid, fixed-iteration loop (e.g., a limit of $\delta=20$ cycles) to thwart timing side-channel attacks. This approach is computationally heavy and inevitably introduces a non-zero failure probability.
 *   **SSWU + Isogeny (Our Pipeline):** Delivers an absolutely deterministic, 100% successful mapping. It enables branch selection logic to be implemented exclusively via straight-line, branchless arithmetic (constant-time conditional moves), bypassing the need for stochastic extraction entirely.
-*   **Empirical Result:** The script demonstrates that the SSWU + Isogeny method yields a **~90.8% performance gain** over the bounded Try-and-Increment method, proving that true constant-time security does not require sacrificing operational efficiency.
+*   **Empirical Result (10,000 iterations):** The script demonstrates that the SSWU + Isogeny method yields a **~91.2% performance gain** over the bounded Try-and-Increment method and a **~58.5% gain** over unbounded trivial hashing. This proves that true constant-time security does not require sacrificing operational efficiency.
 
 *(Note: The empirical evaluation of the exact inverse operation—Point-to-Uniform obfuscation—is detailed above in the "Direct SW Bottleneck" section).*
 
