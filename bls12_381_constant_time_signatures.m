@@ -214,6 +214,11 @@ assert (G_ext in E_extended) and (G_ext ne Identity_ext)\
 and (q * G_ext eq Identity_ext);
 
 // 1j. Pairing Function
+// NOTE: For functional validation and mathematical proof of concept in this script, 
+// the built-in ReducedTatePairing is utilized. In production environments (C/Rust), 
+// Optimal Ate (R-ate) pairing over sextic twists is strictly deployed to minimize 
+// Miller loop iterations and bypass heavy Fp12 arithmetic.
+
 Pairing := ReducedTatePairing; //TatePairing;
 
 // --- Define the final exponent ---
