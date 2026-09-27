@@ -27,17 +27,17 @@ While recent literature optimizes the *forward* Hash-to-Curve mapping for $j \in
 *   **Isogeny-Based SSWU:** ~1.89 seconds (0 isogeny roots + exactly 1 SSWU root)
 *   **Result:** The proposed isogeny pipeline is **~5.89x faster** for steganographic obfuscation, perfectly corroborating the theoretical algebraic bounds.
 
-### ⏱️ Constant-Time Execution & Signature Generation
+### ⏱️ Constant-Time Execution & The Elligator Squared Extraction
 
-The `bls12_381_constant_time_signatures.m` script empirically substantiates the mathematical claims presented in the manuscript by comparing Hash-to-Curve mapping strategies within the context of BLS digital signature generation. 
+The `bls12_381_constant_time_signatures.m` script empirically substantiates the mathematical claims presented in the manuscript by comparing Hash-to-Curve mapping strategies. 
 
-The manuscript emphasizes that algorithms lacking strict constant-time execution (such as the basic Try-and-Increment method) leave statistical artifacts that can be exploited via timing side-channel attacks, such as the Dragonblood attack. To enforce constant-time execution on the Try-and-Increment method, one must strictly bound the number of iterations (e.g., setting a limit of $\delta = 20$ cycles). However, this stochastic approach inevitably introduces a non-zero failure probability, which is entirely unacceptable for the uninterrupted operation of decentralized consensus systems.
+The manuscript emphasizes that naive Point-to-Uniform mappings often rely on dynamic `while` loops, leaving statistical artifacts that can be exploited via timing side-channel attacks (e.g., the Dragonblood attack). To enforce constant-time execution, the probabilistic extraction phase of Elligator Squared (the "Pick-and-Check" routine) must be executed for a fixed, predetermined number of iterations $N$. Since each iteration has an expected success rate of ~50%, the failure probability scales to $2^{-N}$, becoming cryptographically negligible for suitable $N$. 
 
-The isogeny-based pipeline proposed in the paper resolves this issue at a fundamental level:
+The isogeny-based pipeline resolves the severe computational bottleneck of this constant-time loop:
 
-*   **Absolute Determinism:** Unlike stochastic methods, applying the Simplified SWU (SSWU) algorithm in conjunction with an explicit isogeny mathematically guarantees a 100% successful mapping of any binary sequence to the curve.
-*   **True Constant-Time Execution:** The SSWU algorithm allows branch selection logic to be implemented exclusively via straight-line, branchless arithmetic (constant-time conditional moves), completely eliminating timing leaks.
-*   **Empirical Superiority:** According to the theoretical complexity table in the manuscript, the forward mapping based on isogenies requires zero heavy exponentiations when evaluated in projective coordinates. The script confirms this extreme efficiency in practice: the SSWU method demonstrates a **90.82% performance gain** over the stochastic method (Try-and-Increment with a 20-iteration limit) and a **56.85% gain** over trivial (unbounded) hashing.
+*   **Absolute Determinism for the Receiver:** The Uniform-to-Point reconstruction executed by the receiver relies on the forward SSWU algorithm and an explicit isogeny, mathematically guaranteeing a 100% successful mapping in exactly one iteration.
+*   **Minimal Sender Overhead:** During the sender's fixed $N$-iteration extraction loop, using direct SW encodings on $j \in \{0, 1728\}$ curves demands $\ge 7$ heavy exponentiations per iteration. Our pipeline reduces this to exactly 1 quadratic root extraction per iteration, achieving a **7x multiplicative speedup**.
+*   **True Constant-Time Execution:** The pipeline allows all branch selections and valid root commitments to be implemented exclusively via straight-line, branchless arithmetic (constant-time conditional moves), completely eliminating timing leaks during the $N$ iterations.
 
 ## 📂 Repository Structure
 
