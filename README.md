@@ -44,6 +44,17 @@ The **Elligator Squared** framework resolves this non-surjectivity by representi
 
 *The ensuing consequence:* To prevent timing side-channels during this probabilistic extraction, the Pick-and-Check loop must be artificially bounded to a fixed, constant number of iterations $N$. This is exactly where the computational bottleneck of direct SW encodings ($\ge 7$ heavy exponentiations per iteration) becomes catastrophic for high-throughput networks. By integrating Elligator Squared with our explicit inverse isogenies, the cost of each Pick-and-Check iteration drops to exactly 1 quadratic root extraction. Thus, while state-of-the-art direct Hash-to-Curve methods excel at signature generation, the Elligator Squared Pick-and-Check loop—powered by our inverse isogenies—is strictly mandatory at the transport layer to ensure *any* signature can be obfuscated securely and efficiently.
 
+### 🔮 Vision: The "Ultimate Cryptographic Primitive"
+
+Vitalik Buterin describes obfuscation as the "ultimate cryptographic primitive" because it allows a program to operate equivalently while revealing absolutely nothing about its inner workings or secret keys. While current privacy techniques (like zero-knowledge proofs) are often limited to user-owned domains, true obfuscation promises a path toward "perfect privacy" for decentralized systems. 
+
+While Buterin's vision primarily focuses on the obfuscation of *computation*—such as hiding smart contract logic, obfuscating auctions, or enabling ultra-cheap ZKP verification where verifying a proof is as simple as verifying a signature—this repository tackles the foundational prerequisite: the steganographic obfuscation of *cryptographic data in transit*.
+
+*   **The Indistinguishability Property:** Buterin formalizes privacy by stating that observers should be unable to distinguish between two obfuscated programs that implement the same functionality. Our Point-to-Uniform pipeline applies this exact theoretical principle to network traffic: an adversary (or DPI classifier) cannot distinguish an obfuscated BLS consensus signature from ambient uniform noise.
+*   **Consensus Layer Survival:** Buterin notes that attackers might attempt to extract information from obfuscated contracts by simulating local, private forks. However, before complex smart contract obfuscation can even be realized, the underlying Layer-1 consensus (which relies on continuously broadcasting BLS signatures) must survive immediate state-level censorship. 
+
+By integrating Elligator Squared with explicit inverse isogenies, we provide the mathematical framework required to achieve steganographic invisibility at the transport layer, securing the classical foundation necessary to support the "ultimate cryptographic primitives" of the future.
+
 ## 📂 Repository Structure
 
 *   `bls12_479_search.m` — Algorithmic parameter search script incorporating a steganographic filter to discover optimal BLS12 curves (yields BLS12-479+).
