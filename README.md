@@ -32,13 +32,15 @@ The `bls12_381_constant_time_signatures.m` script models the *forward* Hash-to-C
 
 However, generating a signature and *steganographically hiding* it for network transmission are two fundamentally different tasks that enforce a strict architectural boundary:
 
-*   **Generation (Hash-to-Curve):** Deterministically maps uniform data to a curve point. The script demonstrates that achieving constant-time execution via bounded stochastic loops (Try-and-Increment) is computationally heavy and introduces non-zero failure probabilities. By contrast, our deterministic SSWU + Isogeny method yields a **~91.2% performance gain** over bounded Try-and-Increment (at 10,000 iterations) and a **~58.5% gain** over unbounded trivial hashing, proving that true constant-time security does not require sacrificing operational efficiency.
+*   **Generation (Hash-to-Curve):** Deterministically maps uniform data to a curve point. The script demonstrates that achieving constant-time execution via bounded stochastic loops (Try-and-Increment) is computationally heavy and introduces non-zero failure probabilities. By contrast, our deterministic SSWU + Isogeny method yields a **~91.2% performance gain** over bounded Try-and-Increment (at 10,000 iterations) and a **~58.5% gain** over unbounded trivial hashing.
 *   **Obfuscation (Point-to-Uniform):** Once the message point is multiplied by the secret key, the resulting signature becomes an arbitrary point on the curve. Transmitting this point in plaintext exposes algebraic invariants to Deep Packet Inspection (DPI). To achieve indistinguishability, the point must be mapped back to uniform noise. 
 
-**The Mathematical Necessity of Elligator Squared:**
+**The Mathematical Necessity of Elligator Squared & The Pick-and-Check Reality:**
 The SSWU algorithm is *not surjective*—its image covers only about 50% of the curve's points. Attempting to apply the inverse SSWU map directly to an arbitrary signature will fail half the time because the target point simply lacks a scalar preimage. 
 
-The **Elligator Squared** framework resolves this non-surjectivity by representing any target point as the sum of two new points ($\grave{Q} = P_u + P_v$), both of which are mathematically guaranteed to have SSWU preimages ($u$ and $v$). Thus, while Hash-to-Curve alone suffices for signature generation, Elligator Squared—powered by our explicit inverse isogenies—is strictly mandatory at the transport layer to ensure that *any* generated signature can be successfully obfuscated into uniform noise.
+The **Elligator Squared** framework resolves this non-surjectivity by representing any target point as the sum of two new points ($\grave{Q} = P_u + P_v$), both of which are mathematically guaranteed to have SSWU preimages ($u$ and $v$). However, finding this valid pair natively reduces Elligator Squared to a probabilistic **"Pick-and-Check"** algorithm. 
+
+*The ensuing consequence:* To prevent timing side-channels during this probabilistic extraction, the Pick-and-Check loop must be artificially bounded to a fixed, constant number of iterations $N$. This is exactly where the computational bottleneck of direct SW encodings ($\ge 7$ heavy exponentiations per iteration) becomes catastrophic for high-throughput networks. By integrating Elligator Squared with our explicit inverse isogenies, the cost of each Pick-and-Check iteration drops to exactly 1 quadratic root extraction. Thus, while Hash-to-Curve alone suffices for signature generation, the Elligator Squared Pick-and-Check loop—powered by our inverse isogenies—is strictly mandatory at the transport layer to ensure *any* signature can be obfuscated securely and efficiently.
 
 ## 📂 Repository Structure
 
