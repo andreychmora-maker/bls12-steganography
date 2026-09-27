@@ -27,17 +27,18 @@ While recent literature optimizes the *forward* Hash-to-Curve mapping for $j \in
 *   **Isogeny-Based SSWU:** ~1.89 seconds (0 isogeny roots + exactly 1 SSWU root)
 *   **Result:** The proposed isogeny pipeline is **~5.89x faster** for steganographic obfuscation, perfectly corroborating the theoretical algebraic bounds.
 
-### ⏱️ Constant-Time Execution & Signature Generation
+### ⏱️ Constant-Time Execution & The Steganographic Boundary
+The `bls12_381_constant_time_signatures.m` script models the *forward* Hash-to-Curve process, generating and verifying a BLS digital signature. In this scenario, a message is hashed to a scalar and deterministically mapped to a valid curve point via the SSWU algorithm and an isogeny bridge. For the task of *creating* a signature, this pipeline is entirely self-sufficient, guarantees 100% success, and does not require the Elligator Squared framework.
 
-The `bls12_381_constant_time_signatures.m` script empirically substantiates the mathematical claims presented in the manuscript by comparing three *forward* Hash-to-Curve strategies within the context of BLS digital signature generation. 
+However, generating a signature and *steganographically hiding* it for network transmission are two fundamentally different tasks that enforce a strict architectural boundary:
 
-The simulation highlights the severe performance penalties of achieving artificial constant-time execution via bounded stochastic loops:
+*   **Generation (Hash-to-Curve):** Deterministically maps uniform data to a curve point. The script demonstrates that achieving constant-time execution via bounded stochastic loops (Try-and-Increment) is computationally heavy and introduces non-zero failure probabilities. By contrast, our deterministic SSWU + Isogeny method yields a **~91.2% performance gain** over bounded Try-and-Increment (at 10,000 iterations) and a **~58.5% gain** over unbounded trivial hashing, proving that true constant-time security does not require sacrificing operational efficiency.
+*   **Obfuscation (Point-to-Uniform):** Once the message point is multiplied by the secret key, the resulting signature becomes an arbitrary point on the curve. Transmitting this point in plaintext exposes algebraic invariants to Deep Packet Inspection (DPI). To achieve indistinguishability, the point must be mapped back to uniform noise. 
 
-*   **Try-and-Increment (Constant-Time):** Relies on a rigid, fixed-iteration loop (e.g., a limit of $\delta=20$ cycles) to thwart timing side-channel attacks. This approach is computationally heavy and inevitably introduces a non-zero failure probability.
-*   **SSWU + Isogeny (Our Pipeline):** Delivers an absolutely deterministic, 100% successful mapping. It enables branch selection logic to be implemented exclusively via straight-line, branchless arithmetic (constant-time conditional moves), bypassing the need for stochastic extraction entirely.
-*   **Empirical Result (10,000 iterations):** The script demonstrates that the SSWU + Isogeny method yields a **~91.2% performance gain** over the bounded Try-and-Increment method and a **~58.5% gain** over unbounded trivial hashing. This proves that true constant-time security does not require sacrificing operational efficiency.
+**The Mathematical Necessity of Elligator Squared:**
+The SSWU algorithm is *not surjective*—its image covers only about 50% of the curve's points. Attempting to apply the inverse SSWU map directly to an arbitrary signature will fail half the time because the target point simply lacks a scalar preimage. 
 
-*(Note: The empirical evaluation of the exact inverse operation—Point-to-Uniform obfuscation—is detailed above in the "Direct SW Bottleneck" section).*
+The **Elligator Squared** framework resolves this non-surjectivity by representing any target point as the sum of two new points ($\grave{Q} = P_u + P_v$), both of which are mathematically guaranteed to have SSWU preimages ($u$ and $v$). Thus, while Hash-to-Curve alone suffices for signature generation, Elligator Squared—powered by our explicit inverse isogenies—is strictly mandatory at the transport layer to ensure that *any* generated signature can be successfully obfuscated into uniform noise.
 
 ## 📂 Repository Structure
 
@@ -48,7 +49,7 @@ The simulation highlights the severe performance penalties of achieving artifici
 *   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the explicit inverse 11-isogeny for $\mathbb{G}_1$ public keys on the standard BLS12-381 curve.
 *   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper evaluating the explicit inverse 3-isogeny for $\mathbb{G}_2$ signatures on the standard BLS12-381 curve over $\mathbb{F}_q$ extension field, where $q=p^2$.
 *   `direct_sw_bottleneck_simulation.m` — Empirical simulation demonstrating the ~6x multi-branch computational penalty of direct Shallue-van de Woestijne (SW) inversions compared to the proposed isogeny-based pipeline.
-*   `bls12_381_constant_time_signatures.m` — A comprehensive simulation of BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies. It empirically demonstrates the severe performance penalties of achieving artificial constant-time execution via bounded Try-and-Increment (stochastic method) versus the proposed, natively constant-time SSWU + Isogeny pipeline.
+*   `bls12_381_constant_time_signatures.m` — A comprehensive simulation of BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies. It empirically demonstrates the severe performance penalties of achieving artificial constant-time execution via bounded Try-and-Increment versus the natively constant-time SSWU + Isogeny pipeline.
 
 ## ⚙️ Quick Start
 
