@@ -219,7 +219,7 @@ and (q * G_ext eq Identity_ext);
 // Optimal Ate (R-ate) pairing over sextic twists is strictly deployed to minimize 
 // Miller loop iterations and bypass heavy Fp12 arithmetic.
 
-Pairing := AtePairing; //ReducedTatePairing; //TatePairing;
+Pairing := AteqPairing; //ReducedTatePairing; //TatePairing;
 
 // --- Define the final exponent ---
 // final_exponent := (p^12 - 1) div q;
@@ -573,6 +573,7 @@ function Verify(Message, PublicKey, Signature)
     (SimplifiedSWUHashToPoint(Message))); // Clearing the cofactor
     
     // 1. Calculate the automatically reduced Ate pairings.
+    // The AteqPairing function maps directly into n-th roots of unity.
     // Note: AteqPairing takes arguments in the order (G2, G1, order, field_size).
     // G_ext and PublicKey are in G2, Signature and AnyPoint are in G1.
     
