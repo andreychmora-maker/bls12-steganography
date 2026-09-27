@@ -27,17 +27,17 @@ While recent literature optimizes the *forward* Hash-to-Curve mapping for $j \in
 *   **Isogeny-Based SSWU:** ~1.89 seconds (0 isogeny roots + exactly 1 SSWU root)
 *   **Result:** The proposed isogeny pipeline is **~5.89x faster** for steganographic obfuscation, perfectly corroborating the theoretical algebraic bounds.
 
-### ⏱️ Constant-Time Execution & The Elligator Squared Extraction
+### ⏱️ Constant-Time Execution & Signature Generation
 
-The `bls12_381_constant_time_signatures.m` script empirically substantiates the mathematical claims presented in the manuscript by comparing Hash-to-Curve mapping strategies. 
+The `bls12_381_constant_time_signatures.m` script empirically substantiates the mathematical claims presented in the manuscript by comparing three *forward* Hash-to-Curve strategies within the context of BLS digital signature generation. 
 
-The manuscript emphasizes that naive Point-to-Uniform mappings often rely on dynamic `while` loops, leaving statistical artifacts that can be exploited via timing side-channel attacks (e.g., the Dragonblood attack). To enforce constant-time execution, the probabilistic extraction phase of Elligator Squared (the "Pick-and-Check" routine) must be executed for a fixed, predetermined number of iterations $N$. Since each iteration has an expected success rate of ~50%, the failure probability scales to $2^{-N}$, becoming cryptographically negligible for suitable $N$. 
+The simulation highlights the severe performance penalties of achieving artificial constant-time execution via bounded stochastic loops:
 
-The isogeny-based pipeline resolves the severe computational bottleneck of this constant-time loop:
+*   **Try-and-Increment (Constant-Time):** Relies on a rigid, fixed-iteration loop (e.g., a limit of 20 cycles) to thwart timing side-channel attacks. This approach is computationally heavy and inevitably introduces a non-zero failure probability.
+*   **SSWU + Isogeny (Our Pipeline):** Delivers an absolutely deterministic, 100% successful mapping. It enables branch selection logic to be implemented exclusively via straight-line, branchless arithmetic (constant-time conditional moves), bypassing the need for stochastic extraction entirely.
+*   **Empirical Result:** The script demonstrates that the SSWU + Isogeny method yields a **~90.8% performance gain** over the bounded Try-and-Increment method, proving that true constant-time security does not require sacrificing operational efficiency.
 
-*   **Absolute Determinism for the Receiver:** The Uniform-to-Point reconstruction executed by the receiver relies on the forward SSWU algorithm and an explicit isogeny, mathematically guaranteeing a 100% successful mapping in exactly one iteration.
-*   **Minimal Sender Overhead:** During the sender's fixed $N$-iteration extraction loop, using direct SW encodings on $j \in \{0, 1728\}$ curves demands $\ge 7$ heavy exponentiations per iteration. Our pipeline reduces this to exactly 1 quadratic root extraction per iteration, achieving a **7x multiplicative speedup**.
-*   **True Constant-Time Execution:** The pipeline allows all branch selections and valid root commitments to be implemented exclusively via straight-line, branchless arithmetic (constant-time conditional moves), completely eliminating timing leaks during the $N$ iterations.
+*(Note: The empirical evaluation of the exact inverse operation—Point-to-Uniform obfuscation—is detailed above in the "Direct SW Bottleneck" section).*
 
 ## 📂 Repository Structure
 
