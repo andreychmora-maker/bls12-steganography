@@ -20,7 +20,18 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
+### ⚖️ The Asymmetric Advantage of Steganographic Transport
+
+The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). For instance, on the BLS12-479+ curve, the sender spends ~947,000 cycles executing the probabilistic Pick-and-Check extraction, while the receiver spends only ~56,000 cycles on deterministic deobfuscation. 
+
+In the context of decentralized consensus networks (such as the Ethereum Beacon Chain), this native asymmetry is not a flaw, but a highly desirable architectural feature:
+
+*   **One-to-Many Gossip Propagation:** A validator obfuscates a signature or public key only once, but that packet must be received, deobfuscated, and verified by tens of thousands of nodes. The near-zero latency on the receiver end (<20 microseconds) ensures that the network does not choke on propagation delays during mass block broadcasting.
+*   **Light Client & IoT Synchronization:** Resource-constrained receivers (such as mobile wallets, browser clients, or IoT sensors) perform only trivial deterministic math. The heavy lifting of the probabilistic search is entirely offloaded to the powerful sender/validator.
+*   **Transport-Layer DoS Resistance:** The sender's Pick-and-Check loop acts as an implicit, asymmetric "Micro-PoW" spam filter at the transport layer. Generating millions of fake, steganographically valid packets to flood the network becomes computationally prohibitive for an attacker, while defending nodes expend minimal resources to deobfuscate and drop invalid payloads.
+
 ### 2. The Direct SW Bottleneck
+
 For the *forward* Hash-to-Curve mapping on curves with $j \in \{0, 1728\}$, recent direct encodings by Koshelev et al. (including SwiftEC) represent the absolute progressive state-of-the-art. These approaches elegantly reduce the forward evaluation to a single field exponentiation, completely bypassing the need for auxiliary isogenies.
 
 However, steganography strictly requires the exact inverse operation (Point-to-Uniform). Simulating a strict constant-time extraction loop (100,000 iterations over the 381-bit base field) reveals the multi-branch penalty of inverting these direct Shallue-van de Woestijne (SW) encodings:
