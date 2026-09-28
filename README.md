@@ -5,11 +5,11 @@
 
 This repository provides the open-source Magma computational algebra scripts accompanying the research on steganographic point obfuscation for curves with $j \in \{0, 1728\}$. It includes explicit parameter search algorithms, extraction routines for the standard BLS12-381 11-isogeny kernel, and a computationally trivial 2-isogeny bridge for the steganographically optimal BLS12-479+ curve.
 
-## 🚀 Empirical Performance Benchmarks
+## 🚀 Empirical Performance Benchmarks & Architecture
 
 **Unified Benchmark Environment:** All empirical simulations and cycle counts presented in this repository were evaluated on a single hardware and software platform: a 2.7 GHz Quad-Core Intel Core i7 (MacBookPro13,3) with 16 GB RAM, running the Magma Computational Algebra System (V2.29-6).
 
-### 1. Isogeny Bridge: BLS12-381 vs. BLS12-479+
+### 🌉 Isogeny Bridge: BLS12-381 vs. BLS12-479+
 To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed BLS12-479+ curve (which natively supports a 2-isogeny bridge) within the **Elligator Squared** framework.
 
 | Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
@@ -21,7 +21,6 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
-
 The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). It is important to note that the ~947,000 cycles (for BLS12-479+) and ~4,250,000 cycles (for BLS12-381) represent the baseline overhead of evaluating the explicit inverse isogeny. For the sender, the full obfuscation cost is substantially higher, as the probabilistic Pick-and-Check loop must be executed in addition to this mapping. 
 
 By contrast, the receiver performs zero probabilistic searching. Deobfuscation is a single, deterministic straight-line execution requiring only ~56,000 cycles on the optimal BLS12-479+ curve.
@@ -32,8 +31,7 @@ In the context of decentralized consensus networks (such as the Ethereum Beacon 
 *   **Light Client & IoT Synchronization:** Resource-constrained receivers (such as mobile wallets, browser clients, or IoT sensors) perform only trivial deterministic math. The heavy lifting of the probabilistic search is entirely offloaded to the powerful sender/validator.
 *   **Transport-Layer DoS Resistance:** The sender's rigorous Pick-and-Check loop acts as an implicit, asymmetric "Micro-PoW" spam filter at the transport layer. Generating millions of fake, steganographically valid packets to flood the network becomes computationally prohibitive for an attacker, while defending nodes expend minimal resources to deobfuscate and drop invalid payloads.
 
-### 2. The Direct SW Bottleneck
-
+### 🚧 The Direct SW Bottleneck
 For the *forward* Hash-to-Curve mapping on curves with $j \in \{0, 1728\}$, recent direct encodings by Koshelev et al. (including SwiftEC) represent the absolute progressive state-of-the-art. These approaches elegantly reduce the forward evaluation to a single field exponentiation, completely bypassing the need for auxiliary isogenies.
 
 However, steganography strictly requires the exact inverse operation (Point-to-Uniform). Simulating a strict constant-time extraction loop (100,000 iterations over the 381-bit base field) reveals the multi-branch penalty of inverting these direct Shallue-van de Woestijne (SW) encodings:
@@ -58,7 +56,6 @@ The **Elligator Squared** framework resolves this non-surjectivity by representi
 *The ensuing consequence:* To prevent timing side-channels during this probabilistic extraction, the Pick-and-Check loop must be artificially bounded to a fixed, constant number of iterations $N$. This is exactly where the computational bottleneck of direct SW encodings ($\ge 7$ heavy exponentiations per iteration) becomes catastrophic for high-throughput networks. By integrating Elligator Squared with our explicit inverse isogenies, the cost of each Pick-and-Check iteration drops to exactly 1 quadratic root extraction. Thus, while state-of-the-art direct Hash-to-Curve methods excel at signature generation, the Elligator Squared Pick-and-Check loop—powered by our inverse isogenies—is strictly mandatory at the transport layer to ensure *any* signature can be obfuscated securely and efficiently.
 
 ### 🔮 Vision: The "Ultimate Cryptographic Primitive"
-
 Vitalik Buterin describes obfuscation as the "ultimate cryptographic primitive" because it allows a program to operate equivalently while revealing absolutely nothing about its inner workings or secret keys. While current privacy techniques (like zero-knowledge proofs) are often limited to user-owned domains, true obfuscation promises a path toward "perfect privacy" for decentralized systems. 
 
 While Buterin's vision primarily focuses on the obfuscation of *computation*—such as hiding smart contract logic, obfuscating auctions, or enabling ultra-cheap ZKP verification where verifying a proof is as simple as verifying a signature—this repository tackles the foundational prerequisite: the steganographic obfuscation of *cryptographic data in transit*.
@@ -107,20 +104,3 @@ magma direct_sw_bottleneck_simulation.m
 
 # 8. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
-```
-
-📚 Academic Citation
-
-If you utilize these scripts or the BLS12-479+ curve parameters in your research,
-please cite the associated archive:
-```bash
-@misc{chmora2026bls12steganography,
-  author       = {Andrey Chmora},
-  title        = {Steganographic Point Obfuscation via Explicit Inverse Isogenies for $j \in \{0, 1728\}$},
-  month        = {Sep},
-  year         = {2026},
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.22736944},
-  url          = {[https://doi.org/10.5281/zenodo.22736944](https://doi.org/10.5281/zenodo.22736944)}
-}
-```
