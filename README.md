@@ -104,3 +104,19 @@ magma direct_sw_bottleneck_simulation.m
 
 # 8. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
+```
+📚 Academic Citation
+If you utilize these scripts or the BLS12-479+ curve parameters in your research,
+please cite the associated archive:
+
+```bash
+@misc{chmora2026bls12steganography,
+  author       = {Andrey Chmora},
+  title        = {Steganographic Point Obfuscation via Explicit Inverse Isogenies for $j \in \{0, 1728\}$},
+  month        = {Sep},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.22736944},
+  url          = {[https://doi.org/10.5281/zenodo.22736944](https://doi.org/10.5281/zenodo.22736944)}
+}
+```
