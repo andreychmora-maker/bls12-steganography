@@ -21,6 +21,7 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
+
 The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). It is important to note that the ~947,000 cycles (for BLS12-479+) and ~4,250,000 cycles (for BLS12-381) represent the baseline overhead of evaluating the explicit inverse isogeny. For the sender, the full obfuscation cost is substantially higher, as the probabilistic Pick-and-Check loop must be executed in addition to this mapping. 
 
 By contrast, the receiver performs zero probabilistic searching. Deobfuscation is a single, deterministic straight-line execution requiring only ~56,000 cycles on the optimal BLS12-479+ curve.
@@ -29,7 +30,6 @@ In the context of decentralized consensus networks (such as the Ethereum Beacon 
 
 *   **One-to-Many Gossip Propagation:** A validator obfuscates a signature or public key only once (bearing the heavy Pick-and-Check and isogeny costs), but that packet must be received, deobfuscated, and verified by tens of thousands of nodes. The near-zero latency on the receiver end (<20 microseconds) ensures that the network does not choke on propagation delays during mass block broadcasting.
 *   **Light Client & IoT Synchronization:** Resource-constrained receivers (such as mobile wallets, browser clients, or IoT sensors) perform only trivial deterministic math. The heavy lifting of the probabilistic search is entirely offloaded to the powerful sender/validator.
-*   **Transport-Layer DoS Resistance:** The sender's rigorous Pick-and-Check loop acts as an implicit, asymmetric "Micro-PoW" spam filter at the transport layer. Generating millions of fake, steganographically valid packets to flood the network becomes computationally prohibitive for an attacker, while defending nodes expend minimal resources to deobfuscate and drop invalid payloads.
 
 ### 🚧 The Direct SW Bottleneck
 For the *forward* Hash-to-Curve mapping on curves with $j \in \{0, 1728\}$, recent direct encodings by Koshelev et al. (including SwiftEC) represent the absolute progressive state-of-the-art. These approaches elegantly reduce the forward evaluation to a single field exponentiation, completely bypassing the need for auxiliary isogenies.
