@@ -1,6 +1,6 @@
 # BLS12 Steganography: Point Obfuscation via Explicit Inverse Isogenies
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22736944.svg)](https://doi.org/10.5281/zenodo.22736944)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23017614.svg)](https://doi.org/10.5281/zenodo.23017614)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This repository provides the open-source Magma computational algebra scripts accompanying the research on steganographic point obfuscation for curves with $j \in \{0, 1728\}$. It includes explicit parameter search algorithms, extraction routines for the standard BLS12-381 11-isogeny kernel, and a computationally trivial 2-isogeny bridge for the steganographically optimal BLS12-479+ curve.
@@ -106,6 +106,9 @@ magma direct_sw_bottleneck_simulation.m
 magma bls12_381_constant_time_signatures.m
 ```
 ### 📚 Academic Citation
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22736944.svg)](https://doi.org/10.5281/zenodo.22736944)
+
 If you utilize these scripts or the BLS12-479+ curve parameters in your research,
 please cite the associated archive:
 
