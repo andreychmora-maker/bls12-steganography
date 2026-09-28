@@ -105,7 +105,7 @@ magma direct_sw_bottleneck_simulation.m
 # 8. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
 ```
-📚 Academic Citation
+### 📚 Academic Citation
 If you utilize these scripts or the BLS12-479+ curve parameters in your research,
 please cite the associated archive:
 
