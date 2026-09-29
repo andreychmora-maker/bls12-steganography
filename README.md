@@ -14,7 +14,7 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 
 | Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **BLS12-381** (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit | ~128-bit |
+| BLS12-381 (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit | ~128-bit |
 | **BLS12-479+** (Proposed) | 2-isogeny | **~947,000 cycles** | **~56,000 cycles** | 479-bit | **~160-bit** |
 | *Performance Gain* | | *~4.5x Speedup* | *~25.7x Speedup* | | *+32 bits* |
 
