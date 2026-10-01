@@ -496,8 +496,8 @@ function sqrt_ratio_3mod4(u, v)
 end function;
 
 function SimplifiedSWUHashToPoint(Message)
-  // u := Fp!StringToInteger(SHA1(Message), 16);
-  u := Fp!StringToInteger(BytesToHex(SHA256(StringToBytes(Message))), 16);
+  u := Fp!StringToInteger(SHA1(Message), 16);
+  // u := Fp!StringToInteger(BytesToHex(SHA256(StringToBytes(Message))), 16);
   // Optimized, straight-line procedure 
   tv1 := u^2; 
   tv1 := Z * tv1;
