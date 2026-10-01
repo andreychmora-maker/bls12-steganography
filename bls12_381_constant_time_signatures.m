@@ -472,7 +472,8 @@ end function;
 
 function SimplifiedSWUHashToPoint(Message)
   // u := Fp!StringToInteger(SHA1(Message), 16);
-  u := Fp!StringToInteger(SHA256(Message), 16);
+  // u := Fp!StringToInteger(SHA256(Message), 16);
+  u := Fp!BytesToHex(SHA256(StringToInteger(Message,16)));
   // Optimized, straight-line procedure 
   tv1 := u^2; 
   tv1 := Z * tv1;
