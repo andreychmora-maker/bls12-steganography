@@ -57,7 +57,8 @@ function HexToBytes(hex_str)
 end function;
 
 function StringToBytes(str)
-    return [ StringToInteger(Sprintf("%o", s), 8) : s in Eltseq(str) ];
+    // StringToCode safely and natively returns the ASCII integer value of a character
+    return [ StringToCode(s) : s in Eltseq(str) ];
 end function;
 
 // ====================================================================
