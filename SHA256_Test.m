@@ -3,8 +3,7 @@
 // ====================================================================
 
 function ROTR(x, n)
-    // Right circular shift. We use addition instead of bitwise OR, 
-    // as the shifted bits are guaranteed not to overlap.
+    // Right circular shift. Uses addition since shifted bits do not overlap.
     return (x div (2^n)) + ((x * (2^(32-n))) mod 4294967296);
 end function;
 
@@ -13,7 +12,7 @@ function SHR(x, n)
 end function;
 
 function CH(x, y, z)
-    // NOT x is implemented as (4294967295 - x) to ensure safe unsigned behavior
+    // NOT x is implemented as (4294967295 - x) for safe unsigned arithmetic
     return BitwiseXor(BitwiseAnd(x, y), BitwiseAnd(4294967295 - x, z));
 end function;
 
@@ -122,35 +121,62 @@ function SHA256(msg_bytes)
         H[8] := (H[8] + h) mod 4294967296;
     end for;
 
-    // 3. Format result as a byte array
+    // 3. Format result as a byte array using Magma intrinsics
     out_bytes := [];
     for x in H do
-        Append(~out_bytes, (x div 16777216) mod 256);
-        Append(~out_bytes, (x div 65536) mod 256);
-        Append(~out_bytes, (x div 256) mod 256);
-        Append(~out_bytes, x mod 256);
+        word_hex := IntegerToString(x, 16);
+        // Ensure strictly 8 hex characters per 32-bit word
+        while #word_hex lt 8 do 
+            word_hex := "0" cat word_hex; 
+        end while;
+        
+        // Parse hex string back to individual bytes
+        for idx in [1..7 by 2] do
+            Append(~out_bytes, StringToInteger(word_hex[idx..idx+1], 16));
+        end for;
     end for;
 
     return out_bytes;
 end function;
 
 // ====================================================================
-// Testing
+// Utility functions for string / hex / byte array conversions
 // ====================================================================
 
 function BytesToHex(bytes)
-    return &cat[ Sprintf("%02x", b) : b in bytes ];
+    res := "";
+    for b in bytes do
+        h := IntegerToString(b, 16);
+        res cat:= #h eq 1 select "0" cat h else h;
+    end for;
+    return res;
+end function;
+
+function HexToBytes(hex_str)
+    return [ StringToInteger(hex_str[i..i+1], 16) : i in [1..#hex_str by 2] ];
 end function;
 
 function StringToBytes(str)
+    // Sprintf("%o") safely handles ASCII extraction in Magma
     return [ StringToInteger(Sprintf("%o", s), 8) : s in Eltseq(str) ];
 end function;
 
-// Test vector for the string "abc"
-// Expected hash: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+// ====================================================================
+// Test execution
+// ====================================================================
+
 test_str := "abc";
 test_bytes := StringToBytes(test_str);
 hash_result := SHA256(test_bytes);
 
+expected_hex := "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+actual_hex := BytesToHex(hash_result);
+
 print "Message:", test_str;
-print "SHA-256:", BytesToHex(hash_result);
+print "SHA-256:", actual_hex;
+
+if actual_hex eq expected_hex then
+    print "\nSUCCESS: Computed hash matches the expected RFC test vector.";
+else
+    print "\nFAILURE: Computed hash does not match.";
+end if;
