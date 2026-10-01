@@ -35,6 +35,7 @@ end function;
 function SIG1(x)
     return BitwiseXor(BitwiseXor(ROTR(x, 17), ROTR(x, 19)), SHR(x, 10));
 end function;
+
 // ====================================================================
 // Utility functions for hex / byte array conversions
 // ====================================================================
@@ -53,6 +54,10 @@ end function;
 function HexToBytes(hex_str)
     if #hex_str eq 0 then return []; end if;
     return [ StringToInteger(hex_str[i..i+1], 16) : i in [1..#hex_str by 2] ];
+end function;
+
+function StringToBytes(str)
+    return [ StringToInteger(Sprintf("%o", s), 8) : s in Eltseq(str) ];
 end function;
 
 // ====================================================================
@@ -159,7 +164,7 @@ function SHA256(msg_bytes)
 end function;
 
 //____BLS__signature_under__BLS12-381_______________________________________
-clear;
+
 function UppercaseFirst(s)
     // Return an empty string if the input is empty.
     if #s eq 0 then
@@ -491,8 +496,7 @@ end function;
 
 function SimplifiedSWUHashToPoint(Message)
   // u := Fp!StringToInteger(SHA1(Message), 16);
-  // u := Fp!StringToInteger(SHA256(Message), 16);
-  u := Fp!BytesToHex(SHA256(HexToBytes(Message)));
+  u := Fp!StringToInteger(BytesToHex(SHA256(StringToBytes(Message))), 16);
   // Optimized, straight-line procedure 
   tv1 := u^2; 
   tv1 := Z * tv1;
