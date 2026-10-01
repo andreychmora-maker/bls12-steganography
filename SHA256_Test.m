@@ -1,19 +1,21 @@
 // ====================================================================
-// Helper bitwise functions for 32-bit words
+// Optimized helper bitwise functions for 32-bit words
+// Utilizing Magma's native bit operations for improved performance
 // ====================================================================
 
 function ROTR(x, n)
-    // Right circular shift. Uses addition since shifted bits do not overlap.
-    return (x div (2^n)) + ((x * (2^(32-n))) mod 4294967296);
+    // Right circular shift using native ShiftRight and ShiftLeft.
+    // Addition is safe here as shifted bits do not overlap.
+    return ModByPowerOf2(ShiftRight(x, n) + ShiftLeft(x, 32-n), 32);
 end function;
 
 function SHR(x, n)
-    return x div (2^n);
+    return ShiftRight(x, n);
 end function;
 
 function CH(x, y, z)
-    // NOT x is implemented as (4294967295 - x) for safe unsigned arithmetic
-    return BitwiseXor(BitwiseAnd(x, y), BitwiseAnd(4294967295 - x, z));
+    // NOT x is implemented as (4294967295 - x) safely capped to 32 bits
+    return BitwiseXor(BitwiseAnd(x, y), BitwiseAnd(ModByPowerOf2(4294967295 - x, 32), z));
 end function;
 
 function MAJ(x, y, z)
@@ -82,11 +84,11 @@ function SHA256(msg_bytes)
             W[j+1] := m[i+j*4]*16777216 + m[i+j*4+1]*65536 + m[i+j*4+2]*256 + m[i+j*4+3];
         end for;
 
-        // Extend to 64 words
+        // Extend to 64 words using ModByPowerOf2
         for j in [17..64] do
             s0 := SIG0(W[j-15]);
             s1 := SIG1(W[j-2]);
-            W[j] := (W[j-16] + s0 + W[j-7] + s1) mod 4294967296;
+            W[j] := ModByPowerOf2(W[j-16] + s0 + W[j-7] + s1, 32);
         end for;
 
         a := H[1]; b := H[2]; c := H[3]; d := H[4];
@@ -96,29 +98,29 @@ function SHA256(msg_bytes)
         for j in [1..64] do
             S1 := EP1(e);
             ch := CH(e, f, g);
-            temp1 := (h + S1 + ch + K[j] + W[j]) mod 4294967296;
+            temp1 := ModByPowerOf2(h + S1 + ch + K[j] + W[j], 32);
             S0 := EP0(a);
             maj := MAJ(a, b, c);
-            temp2 := (S0 + maj) mod 4294967296;
+            temp2 := ModByPowerOf2(S0 + maj, 32);
 
             h := g;
             g := f;
             f := e;
-            e := (d + temp1) mod 4294967296;
+            e := ModByPowerOf2(d + temp1, 32);
             d := c;
             c := b;
             b := a;
-            a := (temp1 + temp2) mod 4294967296;
+            a := ModByPowerOf2(temp1 + temp2, 32);
         end for;
 
-        H[1] := (H[1] + a) mod 4294967296;
-        H[2] := (H[2] + b) mod 4294967296;
-        H[3] := (H[3] + c) mod 4294967296;
-        H[4] := (H[4] + d) mod 4294967296;
-        H[5] := (H[5] + e) mod 4294967296;
-        H[6] := (H[6] + f) mod 4294967296;
-        H[7] := (H[7] + g) mod 4294967296;
-        H[8] := (H[8] + h) mod 4294967296;
+        H[1] := ModByPowerOf2(H[1] + a, 32);
+        H[2] := ModByPowerOf2(H[2] + b, 32);
+        H[3] := ModByPowerOf2(H[3] + c, 32);
+        H[4] := ModByPowerOf2(H[4] + d, 32);
+        H[5] := ModByPowerOf2(H[5] + e, 32);
+        H[6] := ModByPowerOf2(H[6] + f, 32);
+        H[7] := ModByPowerOf2(H[7] + g, 32);
+        H[8] := ModByPowerOf2(H[8] + h, 32);
     end for;
 
     // 3. Extract final byte array
@@ -140,7 +142,7 @@ function SHA256(msg_bytes)
 end function;
 
 // ====================================================================
-// Utility functions for hex / byte array conversions
+// Utility functions for string / hex / byte array conversions
 // ====================================================================
 
 function BytesToHex(bytes)
@@ -157,6 +159,11 @@ end function;
 function HexToBytes(hex_str)
     if #hex_str eq 0 then return []; end if;
     return [ StringToInteger(hex_str[i..i+1], 16) : i in [1..#hex_str by 2] ];
+end function;
+
+function StringToBytes(str)
+    // StringToCode safely and natively returns the ASCII integer value of a character
+    return [ StringToCode(s) : s in Eltseq(str) ];
 end function;
 
 // ====================================================================
