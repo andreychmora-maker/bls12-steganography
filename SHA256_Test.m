@@ -162,21 +162,44 @@ function StringToBytes(str)
 end function;
 
 // ====================================================================
-// Test execution
+// NIST Standard Test Vectors for SHA-256
 // ====================================================================
 
-test_str := "abc";
-test_bytes := StringToBytes(test_str);
-hash_result := SHA256(test_bytes);
+test_vectors := [
+    // 1. Empty string
+    <"", 
+     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">,
+     
+    // 2. Short string ("abc")
+    <"abc", 
+     "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad">,
+     
+    // 3. Long string (448 bits)
+    <"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 
+     "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1">
+];
 
-expected_hex := "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
-actual_hex := BytesToHex(hash_result);
+print "--- Running NIST SHA-256 Test Vectors ---";
+all_passed := true;
 
-print "Message:", test_str;
-print "SHA-256:", actual_hex;
+for i in [1..#test_vectors] do
+    msg_str := test_vectors[i][1];
+    expected_hex := test_vectors[i][2];
+    
+    msg_bytes := StringToBytes(msg_str);
+    actual_hex := BytesToHex(SHA256(msg_bytes));
+    
+    if actual_hex eq expected_hex then
+        printf "Test %o: PASSED\n", i;
+    else
+        printf "Test %o: FAILED!\n", i;
+        printf "  Message : %o\n", msg_str;
+        printf "  Expected: %o\n", expected_hex;
+        printf "  Actual  : %o\n", actual_hex;
+        all_passed := false;
+    end if;
+end for;
 
-if actual_hex eq expected_hex then
-    print "\nSUCCESS: Computed hash matches the expected RFC test vector.";
-else
-    print "\nFAILURE: Computed hash does not match.";
+if all_passed then
+    print "\nSUCCESS: All NIST test vectors passed perfectly! The SHA-256 implementation is solid.";
 end if;
