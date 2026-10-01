@@ -19,7 +19,8 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 | *Performance Gain* | | *~4.5x Speedup* | *~25.7x Speedup* | | *+32 bits* |
 
 By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
-* **Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$ the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
+
+**Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$ the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
 
