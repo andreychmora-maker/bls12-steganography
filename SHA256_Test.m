@@ -121,7 +121,7 @@ function SHA256(msg_bytes)
         H[8] := (H[8] + h) mod 4294967296;
     end for;
 
-    // 3. Format result as a byte array using Magma intrinsics
+    // 3. Extract final byte array
     out_bytes := [];
     for x in H do
         word_hex := IntegerToString(x, 16);
@@ -140,42 +140,41 @@ function SHA256(msg_bytes)
 end function;
 
 // ====================================================================
-// Utility functions for string / hex / byte array conversions
+// Utility functions for hex / byte array conversions
 // ====================================================================
 
 function BytesToHex(bytes)
+    // Hardcode lowercase hex characters to guarantee standard formatting 
+    // and avoid dependency on Magma intrinsic case variations.
+    hex_chars := ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
     res := "";
     for b in bytes do
-        h := IntegerToString(b, 16);
-        res cat:= #h eq 1 select "0" cat h else h;
+        res cat:= hex_chars[(b div 16) + 1] cat hex_chars[(b mod 16) + 1];
     end for;
     return res;
 end function;
 
 function HexToBytes(hex_str)
+    if #hex_str eq 0 then return []; end if;
     return [ StringToInteger(hex_str[i..i+1], 16) : i in [1..#hex_str by 2] ];
-end function;
-
-function StringToBytes(str)
-    // Sprintf("%o") safely handles ASCII extraction in Magma
-    return [ StringToInteger(Sprintf("%o", s), 8) : s in Eltseq(str) ];
 end function;
 
 // ====================================================================
 // NIST Standard Test Vectors for SHA-256
 // ====================================================================
+// Test vectors are provided in Hex to bypass Magma's ASCII parsing limitations.
 
 test_vectors := [
-    // 1. Empty string
+    // 1. Empty string ("")
     <"", 
      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">,
      
     // 2. Short string ("abc")
-    <"abc", 
+    <"616263", 
      "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad">,
      
-    // 3. Long string (448 bits)
-    <"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 
+    // 3. Long string 448 bits ("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")
+    <"6162636462636465636465666465666765666768666768696768696a68696a6b696a6b6c6a6b6c6d6b6c6d6e6c6d6e6f6d6e6f706e6f7071", 
      "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1">
 ];
 
@@ -183,17 +182,16 @@ print "--- Running NIST SHA-256 Test Vectors ---";
 all_passed := true;
 
 for i in [1..#test_vectors] do
-    msg_str := test_vectors[i][1];
+    msg_hex := test_vectors[i][1];
     expected_hex := test_vectors[i][2];
     
-    msg_bytes := StringToBytes(msg_str);
+    msg_bytes := HexToBytes(msg_hex);
     actual_hex := BytesToHex(SHA256(msg_bytes));
     
     if actual_hex eq expected_hex then
         printf "Test %o: PASSED\n", i;
     else
         printf "Test %o: FAILED!\n", i;
-        printf "  Message : %o\n", msg_str;
         printf "  Expected: %o\n", expected_hex;
         printf "  Actual  : %o\n", actual_hex;
         all_passed := false;
