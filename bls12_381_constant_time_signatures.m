@@ -242,8 +242,7 @@ end function;
 
 //___________________________________________________________________________
 // The prime field for BLS12-381
-p :=0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfff\
-eb153ffffb9feffffffffaaab;
+p :=0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
 
 z := -0xd201000000010000;
 assert p eq z + (z^4 - z^2 + 1)*(z - 1)^2 / 3;
@@ -268,10 +267,8 @@ and (q * G_target eq Identity);
 // The curve given by y'^2 = g'(x') = x'^3 + A' x' + B' is isogenous 
 // to the target curve
 // ===================================================================
-A_isog := 0x144698a3b8e9433d693a02c96d4982b0ea985383ee66a8d8e8981aefd881ac989\
-36f8da0e0f97f5cf428082d584c1d;
-B_isog := 0x12e2908d11688030018b12e8753eee3b2016c1f0f24f4070a0b9c14fcef35ef55\
-a23215a316ceaa5d1cc48e98e172be0;
+A_isog := 0x144698a3b8e9433d693a02c96d4982b0ea985383ee66a8d8e8981aefd881ac98936f8da0e0f97f5cf428082d584c1d;
+B_isog := 0x12e2908d11688030018b12e8753eee3b2016c1f0f24f4070a0b9c14fcef35ef55a23215a316ceaa5d1cc48e98e172be0;
 // The isogenous curve E_isog:y'^2 = x'^3 + A' x' + B'
 E_isog := EllipticCurve([Fp | A_isog, B_isog]);
 
