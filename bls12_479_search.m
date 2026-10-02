@@ -4,7 +4,7 @@
    while maintaining high pairing speed (sparse Hamming weight).
 ================================================================================= */
 
-FindStegoBLS12 := function(start_seed, L, max_hw)
+function FindStegoBLS12(start_seed, L, max_hw)
     x := start_seed;
     
     /* Ensure x = 1 mod 3 to guarantee the cofactor is an integer */
