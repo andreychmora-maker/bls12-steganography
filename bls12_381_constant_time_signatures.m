@@ -397,6 +397,9 @@ Pairing := ReducedTatePairing; //AteqPairing; //TatePairing;
 // ===================================================================
 
 function HashToPoint(Message)
+    // NOTE: SHA256 is not a standard Magma function, but SHA1 is.
+    // Using SHA1 here for compatibility with the online calculator,
+    // though SHA256 would be preferred.
     x_coord := Fp!StringToInteger(SHA1(Message),16);
     // x_coord := Fp!StringToInteger(BytesToHex(SHA256(StringToBytes(Message))), 16);
     while true do
@@ -500,6 +503,9 @@ function sqrt_ratio_3mod4(u, v)
 end function;
 
 function SimplifiedSWUHashToPoint(Message)
+  // NOTE: SHA256 is not a standard Magma function, but SHA1 is.
+  // Using SHA1 here for compatibility with the online calculator,
+  // though SHA256 would be preferred.
   u := Fp!StringToInteger(SHA1(Message), 16);
   // u := Fp!StringToInteger(BytesToHex(SHA256(StringToBytes(Message))), 16);
   // Optimized, straight-line procedure 
