@@ -78,12 +78,16 @@ function SHA256(msg_bytes)
     // 2. Process blocks of 512 bits (64 bytes)
     for i in [1..#m by 64] do
         W := [0 : j in [1..64]];
-        
+        /*
         // First 16 words
         for j in [0..15] do
             W[j+1] := m[i+j*4]*16777216 + m[i+j*4+1]*65536 + m[i+j*4+2]*256 + m[i+j*4+3];
         end for;
-
+        */
+        for j in [0..15] do
+            W[j+1] := ShiftLeft(m[i+j*4], 24) + ShiftLeft(m[i+j*4+1], 16) + ShiftLeft(m[i+j*4+2], 8) + m[i+j*4+3];
+        end for;
+        
         // Extend to 64 words using ModByPowerOf2
         for j in [17..64] do
             s0 := SIG0(W[j-15]);
