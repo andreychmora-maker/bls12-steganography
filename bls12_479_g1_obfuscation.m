@@ -61,7 +61,7 @@ while PublicKey_isog eq Identity do PublicKey_isog := Random(E_isog); end while;
 
 printf "Target Curve:    %o\n", E_target;
 printf "Isogenous Curve: %o\n", E_isog;
-printf "Running 1000 iterations for 2-Isogeny Obfuscation...\n";
+printf "Running 100000 iterations for 2-Isogeny Obfuscation...\n";
 
 NumberOfAttempts := 100000; 
 ObfuscateCls := 0;  
