@@ -1,7 +1,9 @@
-/* ====================================================================
-   Optimized helper bitwise functions for 32-bit words
-   Utilizing Magma's native bit operations for improved performance
-   ==================================================================== */
+/* 
+====================================================================
+Optimized helper bitwise functions for 32-bit words
+Utilizing Magma's native bit operations for improved performance
+==================================================================== 
+*/
 
 function ROTR(x, n)
     // Right circular shift using native ShiftRight and ShiftLeft.
