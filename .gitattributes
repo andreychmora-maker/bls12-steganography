@@ -1,3 +1,4 @@
+*.m linguist-language=Modelica
 *.m linguist-language=Pascal
 *.m linguist-language=MATLAB
 *.m linguist-language=Ada
