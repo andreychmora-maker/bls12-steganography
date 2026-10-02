@@ -1,18 +1,15 @@
 /* Finding the kernel generator on BLS12-381 curve */
 
 /* 1. Setup BLS12-381 Field and Curves */
-p := 0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512b\
-f6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
+p := 0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab;
 Fp := FiniteField(p);
 
 /* The Standard BLS12-381 Curve E (y^2 = x^3 + 4) */
 E_target := EllipticCurve([Fp!0, Fp!4]);
 
 /* The Target Isogenous Curve E_acute */
-A_isog := 0x144698a3b8e9433d693a02c96d4982b0ea985383ee6\
-6a8d8e8981aefd881ac98936f8da0e0f97f5cf428082d584c1d;
-B_isog := 0x12e2908d11688030018b12e8753eee3b2016c1f0f24\
-f4070a0b9c14fcef35ef55a23215a316ceaa5d1cc48e98e172be0;
+A_isog := 0x144698a3b8e9433d693a02c96d4982b0ea985383ee66a8d8e8981aefd881ac98936f8da0e0f97f5cf428082d584c1d;
+B_isog := 0x12e2908d11688030018b12e8753eee3b2016c1f0f24f4070a0b9c14fcef35ef55a23215a316ceaa5d1cc48e98e172be0;
 E_acute := EllipticCurve([Fp | A_isog, B_isog]);
 
 print "--- Searching for Inverse Kernel (Manual Velu Implementation) ---";
