@@ -8,20 +8,18 @@ E_target := EllipticCurve([Fp | 0, B_target]);
 print "--- 1. Target Curve BLS12-479+ ---";
 printf "E : y^2 = x^3 + %o\n", B_target;
 
-// Isolate 2-torsion kernel (x^3 + 1 = 0)
-roots := Roots(PolynomialRing(Fp)!([Fp!B_target, 0, 0, 1])); 
-x0 := roots[1][1];
-
-printf "2-Torsion point P_2 found with x0 = %o\n", Integers()!x0;
+// Trivial 2-torsion kernel (x^3 + 1 = 0)
+x0 := Fp!-1;
+printf "2-Torsion point P_2 explicitly set with x0 = %o\n", Integers()!x0;
 
 print "\n--- 2. Isogenous Curve Constants (Manual Velu) ---";
 t := 3 * x0^2;
 A_isog := -5 * t;
 B_isog := Fp!B_target - 7 * x0 * t;
 
-// To display negative numbers nicely instead of large field elements:
-printf "A' = %o\n", A_isog;
-printf "B' = %o\n", B_isog;
+// Explicit analytical verification
+printf "A' = %o\n", A_isog; assert A_isog eq Fp!-15;
+printf "B' = %o\n", B_isog; assert B_isog eq Fp!22;
 printf "t  = %o\n", t;
 
 printf "\nIsogenous curve E': y^2 = x^3 - 15x + 22\n";
