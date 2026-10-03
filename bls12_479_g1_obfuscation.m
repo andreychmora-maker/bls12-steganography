@@ -93,7 +93,7 @@ printf "Target Curve:    %o\n", E_target;
 printf "Isogenous Curve: %o\n", E_isog;
 printf "Running 100000 iterations for 2-Isogeny Obfuscation...\n";
 
-NumberOfAttempts := 10000; 
+NumberOfAttempts := 100000; 
 ObfuscateCls := 0;  
 DeObfuscateCls := 0; 
 
