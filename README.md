@@ -15,22 +15,22 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 | Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | BLS12-381 (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit | ~128-bit |
-| **BLS12-479+** (Proposed) | 2-isogeny | **~947,000 cycles** | **~56,000 cycles** | 479-bit | **~160-bit** |
-| *Performance Gain* | | *~4.5x Speedup* | *~25.7x Speedup* | | *+32 bits* |
+| **BLS12-479+** (Proposed) | 2-isogeny | **~1,793,000 cycles** | **~73,000 cycles** | 479-bit | **~160-bit** |
+| *Performance Gain* | | *~2.37x Speedup* | *~19.7x Speedup* | | *+32 bits* |
 
-By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **less than 20 microseconds**, imposing near-zero latency overhead on receiving validators.
+By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **under 30 microseconds**, imposing near-zero latency overhead on receiving validators.
 
 **Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$ the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
 
-The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). It is important to note that the ~947,000 cycles (for BLS12-479+) and ~4,250,000 cycles (for BLS12-381) represent the baseline overhead of evaluating the explicit inverse isogeny. For the sender, the full obfuscation cost is substantially higher, as the probabilistic Pick-and-Check loop must be executed in addition to this mapping. 
+The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). It is important to note that the ~1,793,000 cycles (for BLS12-479+) and ~4,250,000 cycles (for BLS12-381) represent the baseline overhead of evaluating the explicit inverse isogeny. For the sender, the full obfuscation cost is substantially higher, as the probabilistic Pick-and-Check loop must be executed in addition to this mapping. 
 
-By contrast, the receiver performs zero probabilistic searching. Deobfuscation is a single, deterministic straight-line execution requiring only ~56,000 cycles on the optimal BLS12-479+ curve.
+By contrast, the receiver performs zero probabilistic searching. Deobfuscation is a single, deterministic straight-line execution requiring only ~73,000 cycles on the optimal BLS12-479+ curve.
 
 In the context of decentralized consensus networks (such as the Ethereum Beacon Chain), this native asymmetry is not a flaw, but a highly desirable architectural feature:
 
-*   **One-to-Many Gossip Propagation:** A validator obfuscates a signature or public key only once (bearing the heavy Pick-and-Check and isogeny costs), but that packet must be received, deobfuscated, and verified by tens of thousands of nodes. The near-zero latency on the receiver end (<20 microseconds) ensures that the network does not choke on propagation delays during mass block broadcasting.
+*   **One-to-Many Gossip Propagation:** A validator obfuscates a signature or public key only once (bearing the heavy Pick-and-Check and isogeny costs), but that packet must be received, deobfuscated, and verified by tens of thousands of nodes. The near-zero latency on the receiver end (<30 microseconds) ensures that the network does not choke on propagation delays during mass block broadcasting.
 *   **Light Client & IoT Synchronization:** Resource-constrained receivers (such as mobile wallets, browser clients, or IoT sensors) perform only trivial deterministic math. The heavy lifting of the probabilistic search is entirely offloaded to the powerful sender/validator.
 
 ### 🚧 The Direct SW Bottleneck
@@ -107,6 +107,7 @@ magma direct_sw_bottleneck_simulation.m
 # 8. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
 ```
+
 ### 📚 Academic Citation
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22736944.svg)](https://doi.org/10.5281/zenodo.22736944)
