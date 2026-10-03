@@ -81,8 +81,7 @@ printf "Expected   : %o\n", Expected_PublicKey_target;
 printf "Recovered  : %o\n", Recovered_PublicKey_target;
 
 // Verification check for the reconstructed point
-
-// Проверка корректности восстановления (с учетом знака Y)
+// Checking the correctness of the recovery (taking into account the sign of Y)
 assert Recovered_PublicKey_target eq Expected_PublicKey_target or \
        Recovered_PublicKey_target eq -Expected_PublicKey_target;
 print "Assert passed! The point was successfully reconstructed.";
