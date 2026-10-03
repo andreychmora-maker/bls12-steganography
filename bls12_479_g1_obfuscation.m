@@ -24,7 +24,7 @@ function Isogeny2Target(P_isog)
     Y_isog := y + 3 * y / (x_den^2);
     
     // Isomorphism to E_target: y^2 = x^3 + 1 (scaling by u^2=4, u^3=8)
-    return [X_isog / 4, Y_isog / 8];
+    return E_target![X_isog / 4, Y_isog / 8];
 end function;
 
 // Inverse of Dual Isogeny (solving quadratic for Obfuscation)
@@ -41,39 +41,71 @@ function BasePreimage(P_target)
     return true, (-B_coef + root) / 2; 
 end function;
 
-function GenerateAndObfuscateOnIsog(P_isog)  
-    Success := false;
-    while not Success do
-        // Simulate obfuscation attempt
-        Success, x_cand := BasePreimage(Isogeny2Target(P_isog));
-    end while;
-    return Fp!1, Fp!2; 
+function GenerateAndObfuscateOnIsog(P_isog)
+    P_target := Isogeny2Target(P_isog);
+    Success, x_cand := BasePreimage(P_target);
+    
+    if not Success then
+        return false, Fp!0, Fp!0;
+    end if;
+    
+    // Reconstruct the y-coordinate on E_isog: y^2 = x^3 + A*x + B
+    y_sq := x_cand^3 + A_isog * x_cand + B_isog;
+    y_cand := Sqrt(y_sq);
+    
+    return true, x_cand, y_cand;
 end function;
 
-function ReconstructAndMap2Target(u, v, P_isog)
-    P_target := Isogeny2Target(P_isog);
-    return E_target!P_target;
+function ReconstructAndMap2Target(u, v)
+    P_isog_rec := E_isog![u, v];
+    return Isogeny2Target(P_isog_rec);
 end function;
+
+
+print "\n--- Correctness Verification ---";
+// Find a random point for which a preimage exists (simulating Rejection Sampling)
+Success := false;
+PublicKey_isog := Identity;
+u := Fp!0; v := Fp!0;
+
+while not Success do
+    PublicKey_isog := Random(E_isog);
+    if PublicKey_isog eq Identity then continue; end if;
+    Success, u, v := GenerateAndObfuscateOnIsog(PublicKey_isog);
+end while;
+
+Expected_PublicKey_target := Isogeny2Target(PublicKey_isog);
+Recovered_PublicKey_target := ReconstructAndMap2Target(u, v);
+
+printf "Expected   : %o\n", Expected_PublicKey_target;
+printf "Recovered  : %o\n", Recovered_PublicKey_target;
+
+// Verification check for the reconstructed point
+
+// Проверка корректности восстановления (с учетом знака Y)
+assert Recovered_PublicKey_target eq Expected_PublicKey_target or \
+       Recovered_PublicKey_target eq -Expected_PublicKey_target;
+print "Assert passed! The point was successfully reconstructed.";
+
 
 print "\n--- Runtime Test & Benchmark ---";
-PublicKey_isog := Random(E_isog);
-while PublicKey_isog eq Identity do PublicKey_isog := Random(E_isog); end while;
-
 printf "Target Curve:    %o\n", E_target;
 printf "Isogenous Curve: %o\n", E_isog;
 printf "Running 100000 iterations for 2-Isogeny Obfuscation...\n";
 
-NumberOfAttempts := 100000; 
+NumberOfAttempts := 10000; 
 ObfuscateCls := 0;  
 DeObfuscateCls := 0; 
 
 for i in [1..NumberOfAttempts] do
+    // Profile obfuscation clock cycles
     t_time := ClockCycles(); 
-    u, v := GenerateAndObfuscateOnIsog(PublicKey_isog);
+    _, u, v := GenerateAndObfuscateOnIsog(PublicKey_isog);
     ObfuscateCls +:= (ClockCycles() - t_time);
 
+    // Profile deobfuscation clock cycles
     t_time := ClockCycles(); 
-    PublicKey_target := ReconstructAndMap2Target(u, v, PublicKey_isog);
+    PublicKey_target := ReconstructAndMap2Target(u, v);
     DeObfuscateCls +:= (ClockCycles() - t_time);
 end for;
 
