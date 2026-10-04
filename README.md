@@ -67,7 +67,7 @@ While Buterin's vision primarily focuses on the obfuscation of *computation*—s
 
 By integrating Elligator Squared with explicit inverse isogenies, we provide the mathematical framework required to achieve steganographic invisibility at the transport layer, securing the classical foundation necessary to support the "ultimate cryptographic primitives" of the future.
 
-## ## 📂 Repository Structure
+### 📂 Repository Structure
 
 *   `bls12_479_search.m` — Algorithmic parameter search script incorporating a steganographic filter to discover optimal BLS12 curves (yields BLS12-479+).
 *   `bls12_479_isogeny_generator.m` — Automated generator for the dual 2-isogeny constants over BLS12-479+, utilizing explicit Vélu's formulas for the 2-torsion kernel.
@@ -78,8 +78,9 @@ By integrating Elligator Squared with explicit inverse isogenies, we provide the
 *   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper evaluating the explicit inverse 3-isogeny for $\mathbb{G}_2$ signatures on the standard BLS12-381 curve over $\mathbb{F}_q$ extension field, where $q=p^2$.
 *   `direct_sw_bottleneck_simulation.m` — Empirical simulation demonstrating the ~6x multi-branch computational penalty of direct Shallue-van de Woestijne (SW) inversions compared to the proposed isogeny-based pipeline.
 *   `bls12_381_constant_time_signatures.m` — A comprehensive simulation of BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies. It empirically demonstrates the severe performance penalties of achieving artificial constant-time execution via bounded Try-and-Increment versus the natively constant-time SSWU + Isogeny pipeline.
+*   `SHA256_Test.m` — A validation script testing the SHA-256 hash function implementation against standard cryptographic test vectors, ensuring correctness for the Hash-to-Curve and uniform encoding pipelines.
 
-## ⚙️ Quick Start
+### ⚙️ Quick Start
 
 The scripts are written for the [Magma Computational Algebra System](http://magma.maths.usyd.edu.au/magma/). To reproduce the parameter searches, constant generation, and hardware benchmarks locally, execute the following commands from your terminal:
 
@@ -110,6 +111,9 @@ magma direct_sw_bottleneck_simulation.m
 
 # 9. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
+
+# 10. Verify the SHA-256 hash function implementation against standard test vectors
+magma SHA256_Test.m
 ```
 
 ### 📚 Academic Citation
