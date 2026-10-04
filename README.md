@@ -78,6 +78,7 @@ By integrating Elligator Squared with explicit inverse isogenies, we provide the
 *   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper evaluating the explicit inverse 3-isogeny for $\mathbb{G}_2$ signatures on the standard BLS12-381 curve over $\mathbb{F}_q$ extension field, where $q=p^2$.
 *   `direct_sw_bottleneck_simulation.m` — Empirical simulation demonstrating the ~6x multi-branch computational penalty of direct Shallue-van de Woestijne (SW) inversions compared to the proposed isogeny-based pipeline.
 *   `bls12_381_constant_time_signatures.m` — A comprehensive simulation of BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies. It empirically demonstrates the severe performance penalties of achieving artificial constant-time execution via bounded Try-and-Increment versus the natively constant-time SSWU + Isogeny pipeline.
+*   `bls12_539_find_b.m` — Fast twist-search algorithm to determine the optimal $B$ parameter for the high-security BLS12-539 curve equation ($y^2 = x^3 + B$).
 *   `universal_bls12_b_finder.m` — A universal twist-search algorithm that dynamically calculates the field prime $p$ from any BLS12 seed $x$ and determines the optimal $B$ parameter for the curve equation ($y^2 = x^3 + B$).
 *   `SHA256_Test.m` — A validation script testing the SHA-256 hash function implementation against standard cryptographic test vectors, ensuring correctness for the Hash-to-Curve and uniform encoding pipelines.
 
@@ -113,10 +114,13 @@ magma direct_sw_bottleneck_simulation.m
 # 9. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
 
-# 10. Find the B parameter for any BLS12 curve (defaults to BLS12-539)
+# 10. Find the B parameter for the high-security BLS12-539 curve
+magma bls12_539_find_b.m
+
+# 11. Find the B parameter for any BLS12 curve (defaults to BLS12-539)
 magma universal_bls12_b_finder.m
 
-# 11. Verify the SHA-256 hash function implementation against standard test vectors
+# 12. Verify the SHA-256 hash function implementation against standard test vectors
 magma SHA256_Test.m
 ```
 
