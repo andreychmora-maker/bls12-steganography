@@ -37,6 +37,7 @@ end function;
 
 /* ===============================================================================
    Execution: Find B for the BLS12-539 curve (steganographically optimal seed)
+   Substitute any target seed here to get B for the new curve
 ================================================================================= */
 seed_val := 1237940039285380274899137265;
 B_opt := FindBLS12B(seed_val);
