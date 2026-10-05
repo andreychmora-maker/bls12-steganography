@@ -111,12 +111,13 @@ By integrating Elligator Squared with explicit inverse isogenies, we provide the
 *   `bls12_479_isogeny_generator.m` — Automated generator for the dual 2-isogeny constants over BLS12-479+, utilizing explicit Vélu's formulas for the 2-torsion kernel.
 *   `universal_isogeny_2_generator.m` — A universal framework computing optimal 2-isogeny constants for any arbitrary BLS12 curve ($y^2 = x^3 + B$). It dynamically iterates through 2-torsion roots to guarantee the selection of a topology with the minimal absolute coefficients ($A', B'$), ensuring deterministic optimization for EVM gas costs and arithmetic overhead.
 *   `bls12_479_g1_obfuscation.m` — The complete Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-479+, including the $10^5$-iteration hardware benchmark loop.
+*   `bls12_539_g1_obfuscation.m` — The high-security Elligator Squared obfuscation wrapper for $\mathbb{G}_1$ on BLS12-539+, featuring the hardware-optimized bitwise `BasePreimage` function and the $10^5$-iteration benchmark loop.
 *   `bls12_381_kernel_search.m` — Constructive extraction and verification of the $\mathbb{F}_p$ 11-isogeny kernel matching the RFC 9380 target curve for standard BLS12-381.
 *   `bls12_381_g1_obfuscation.m` — Baseline obfuscation wrapper evaluating the explicit inverse 11-isogeny for $\mathbb{G}_1$ public keys on the standard BLS12-381 curve.
 *   `bls12_381_g2_obfuscation.m` — Obfuscation wrapper evaluating the explicit inverse 3-isogeny for $\mathbb{G}_2$ signatures on the standard BLS12-381 curve over $\mathbb{F}_q$ extension field, where $q=p^2$.
 *   `direct_sw_bottleneck_simulation.m` — Empirical simulation demonstrating the ~6x multi-branch computational penalty of direct Shallue-van de Woestijne (SW) inversions compared to the proposed isogeny-based pipeline.
 *   `bls12_381_constant_time_signatures.m` — A comprehensive simulation of BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies. It empirically demonstrates the severe performance penalties of achieving artificial constant-time execution via bounded Try-and-Increment versus the natively constant-time SSWU + Isogeny pipeline.
-*   `bls12_539_find_b.m` — Fast twist-search algorithm to determine the optimal $B$ parameter for the high-security BLS12-539 curve equation ($y^2 = x^3 + B$).
+*   `bls12_539_find_b.m` — Fast twist-search algorithm to determine the optimal $B$ parameter for the high-security BLS12-539+ curve equation ($y^2 = x^3 + B$).
 *   `universal_bls12_b_finder.m` — A universal twist-search algorithm that dynamically calculates the field prime $p$ from any BLS12 seed $x$ and determines the optimal $B$ parameter for the curve equation ($y^2 = x^3 + B$).
 *   `SHA256_Test.m` — A validation script testing the SHA-256 hash function implementation against standard cryptographic test vectors, ensuring correctness for the Hash-to-Curve and uniform encoding pipelines.
 
@@ -140,25 +141,28 @@ magma universal_isogeny_2_generator.m
 # 5. Run the 100,000-iteration hardware benchmark for BLS12-479+ (2-Isogeny)
 magma bls12_479_g1_obfuscation.m
 
-# 6. Run the baseline hardware benchmark for BLS12-381 G1 (11-Isogeny)
+# 6. Run the 100,000-iteration hardware benchmark for the high-security BLS12-539+
+magma bls12_539_g1_obfuscation.m
+
+# 7. Run the baseline hardware benchmark for BLS12-381 G1 (11-Isogeny)
 magma bls12_381_g1_obfuscation.m
 
-# 7. Run the hardware benchmark for BLS12-381 G2 signatures (3-Isogeny)
+# 8. Run the hardware benchmark for BLS12-381 G2 signatures (3-Isogeny)
 magma bls12_381_g2_obfuscation.m
 
-# 8. Simulate the computational bottleneck of Direct SW Inversion
+# 9. Simulate the computational bottleneck of Direct SW Inversion
 magma direct_sw_bottleneck_simulation.m
 
-# 9. Simulate BLS signatures over BLS12-381 comparing three Hash-to-Curve strategies
+# 10. Simulate BLS signatures comparing Hash-to-Curve strategies
 magma bls12_381_constant_time_signatures.m
 
-# 10. Find the B parameter for the high-security BLS12-539 curve
+# 11. Find the B parameter for the high-security BLS12-539+ curve
 magma bls12_539_find_b.m
 
-# 11. Find the B parameter for any BLS12 curve (defaults to BLS12-539)
+# 12. Find the B parameter for any BLS12 curve (defaults to BLS12-539+)
 magma universal_bls12_b_finder.m
 
-# 12. Verify the SHA-256 hash function implementation against standard test vectors
+# 13. Verify the SHA-256 hash function implementation against standard test vectors
 magma SHA256_Test.m
 ```
 
