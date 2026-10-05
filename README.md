@@ -9,17 +9,21 @@ This repository provides the open-source Magma computational algebra scripts acc
 
 **Unified Benchmark Environment:** All empirical simulations and cycle counts presented in this repository were evaluated on a single hardware and software platform: a 2.7 GHz Quad-Core Intel Core i7 (MacBookPro13,3) with 16 GB RAM, running the Magma Computational Algebra System (V2.29-6).
 
-### 🌉 Isogeny Bridge: BLS12-381 vs. BLS12-479+
+### 🌉 Isogeny Bridge: Breaking the Security-Performance Trade-off
 
-To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed BLS12-479+ curve (which natively supports a 2-isogeny bridge) within the **Elligator Squared** framework.
+To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed high-security curves within the **Elligator Squared** framework.
 
 | Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| BLS12-381 (RFC 9381) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit | ~128-bit |
-| **BLS12-479+** (Proposed) | 2-isogeny | **~1,793,000 cycles** | **~73,000 cycles** | 479-bit | **~160-bit** |
-| *Performance Gain* | | *~2.37x Speedup* | *~19.7x Speedup* | | *+32 bits* |
+| BLS12-381 (Baseline) | 11-isogeny | ~4,250,000 cycles | ~1,439,000 cycles | 381-bit | ~128-bit |
+| **BLS12-479+** | 2-isogeny | ~1,801,000 cycles | ~72,700 cycles | 479-bit | ~160-bit |
+| *Gain (479+ vs 381)* | | *~2.36x Speedup* | *~19.8x Speedup* | n/a | *+32 bits* |
+| **BLS12-539+** (Optimal) | 2-isogeny | **~2,207,000 cycles** | **~82,500 cycles** | 539-bit | **~192-bit** |
+| *Gain (539+ vs 381)* | | *~1.92x Speedup* | *~17.4x Speedup* | n/a | *+64 bits* |
 
-By reducing the algebraic complexity to a trivial quadratic preimage solver, the BLS12-479+ implementation strips the steganographic mask in **under 30 microseconds**, imposing near-zero latency overhead on receiving validators.
+**The Genetic Link Bonus:** Notice that scaling from a 381-bit to a massive 539-bit base field to achieve ~192-bit security (and immunity against exTNFS attacks) normally incurs a crippling performance penalty. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to the exact same trivial small-integer constants ($A'=-15, B'=22$). 
+
+This breaks the traditional cryptographic trade-off: **BLS12-539+** delivers absolute high-end security while still operating **~17.4x faster** at the steganographic deobfuscation layer than the weaker, standard BLS12-381.
 
 ### 🛡️ The High-Security Profile: BLS12-539+ & The "Genetic Link"
 To future-proof the protocol against exTNFS (Extended Tower Number Field Sieve) attacks, this repository also introduces the high-security **BLS12-539+** profile (featuring a massive 539-bit base field). 
