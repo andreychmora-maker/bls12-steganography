@@ -56,7 +56,7 @@ For both curves, the optimal base equation resolves to $E: y^2 = x^3 + 1$. Becau
 
 **Breaking the Trade-off:** In classical cryptography, upgrading from a 381-bit to a 539-bit prime would incur a massive performance penalty. However, this genetic link guarantees that scaling up to BLS12-539+ imposes **zero additional algorithmic complexity** on the rational map evaluation. 
 
-The high-security BLS12-539+ profile inherits the exact same ultra-fast, small-integer 2-isogeny bridge as BLS12-479+, bypassing massive modular multiplications entirely. Its performance profile is theoretically strictly bounded by the trivial baseline arithmetic difference between 539-bit and 479-bit word additions, preserving the ~19x performance advantage over the standard BLS12-381 curve..
+The high-security BLS12-539+ profile inherits the exact same ultra-fast, small-integer 2-isogeny bridge as BLS12-479+, bypassing massive modular multiplications entirely. Its performance profile is theoretically strictly bounded by the trivial baseline arithmetic difference between 539-bit and 479-bit word additions, preserving the ~19x performance advantage over the standard BLS12-381 curve.
 
 **Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$ the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
 
