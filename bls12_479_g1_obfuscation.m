@@ -27,6 +27,28 @@ function Isogeny2Target(P_isog)
     return E_target![X_isog / 4, Y_isog / 8];
 end function;
 
+// Optimized Inverse of Dual Isogeny (Hardware/EVM ready)
+function BasePreimage(P_target)
+    x_t := P_target[1];
+    
+    // 1. Вычисляем уменьшенный дискриминант: D = x_t^2 - x_t + 1
+    Delta_sub := x_t^2 - x_t + 1;
+    
+    if not IsSquare(Delta_sub) then 
+        return false, Fp!0; 
+    end if;
+    
+    root_sub := Sqrt(Delta_sub);
+    
+    // 2. Битовые сдвиги (SHL 1) эмулируются сложением для избежания MUL
+    x_t_shl1 := x_t + x_t;             // 2 * x_t
+    root_shl1 := root_sub + root_sub;  // 2 * root_sub
+    
+    // 3. Возвращаем 2*x_t + 1 + 2*root_sub
+    return true, x_t_shl1 + 1 + root_shl1; 
+end function;
+
+/*
 // Inverse of Dual Isogeny (solving quadratic for Obfuscation)
 function BasePreimage(P_target)
     x_t := P_target[1];
@@ -40,6 +62,7 @@ function BasePreimage(P_target)
     root := Sqrt(Delta);
     return true, (-B_coef + root) / 2; 
 end function;
+*/
 
 function GenerateAndObfuscateOnIsog(P_isog)
     P_target := Isogeny2Target(P_isog);
