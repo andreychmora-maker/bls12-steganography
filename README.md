@@ -70,7 +70,7 @@ Beyond the steganographic advantages of the 2-isogeny bridge, the architectural 
 Because all BLS curves naturally satisfy $p \equiv 1 \pmod 3$, the 539-bit field $\mathbb{F}_p$ is guaranteed to contain a non-trivial cube root of unity $\beta$. This provides a nearly zero-cost map of the curve onto itself: $\phi(x, y) = (\beta x, y)$, which corresponds to multiplying the point by a specific scalar $\lambda$.
 
 During standard cryptographic operations (such as validator key generation or signing), any massive 539-bit scalar $k$ can be algorithmically decomposed into two ~270-bit halves ($k = k_1 + k_2\lambda$). When evaluated using Shamir's trick:
-$$kP = k_1P + k_2\phi(P).$$
+$$[k]P = [k_1]P + [k_2]\phi(P).$$
 
 This GLV decomposition effectively cuts the cost of scalar multiplication in half. Thus, the $B=1$ parameter yields a **"dual jackpot"**: it seamlessly preserves the native GLV acceleration expected of standard BLS curves, while simultaneously providing the trivial $x_0 = -1$ kernel required for ultra-fast 2-isogeny payload obfuscation. This ensures that the massive 539-bit high-security field imposes minimal computational overhead during both steganographic transmission and core base arithmetic.
 
