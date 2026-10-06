@@ -72,7 +72,7 @@ Because all BLS curves naturally satisfy $p \equiv 1 \pmod 3$, the 539-bit field
 During standard cryptographic operations (such as validator key generation or signing), any massive 539-bit scalar $k$ can be algorithmically decomposed into two ~270-bit halves ($k = k_1 + k_2\lambda$). When evaluated using Shamir's trick:
 $$kP = k_1P + k_2\phi(P).$$
 
-This GLV decomposition effectively **cuts the cost of scalar multiplication in half**. Thus, the $B=1$ parameter yields a "dual jackpot": it provides the trivial $x_0 = -1$ kernel for ultra-fast payload obfuscation, and the $\beta$ root for 50% faster base arithmetic, effortlessly absorbing the computational overhead of the massive 539-bit high-security field.
+This GLV decomposition effectively cuts the cost of scalar multiplication in half. Thus, the $B=1$ parameter yields a **"dual jackpot"**: it seamlessly preserves the native GLV acceleration expected of standard BLS curves, while simultaneously providing the trivial $x_0 = -1$ kernel required for ultra-fast 2-isogeny payload obfuscation. This ensures that the massive 539-bit high-security field imposes minimal computational overhead during both steganographic transmission and core base arithmetic.
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
 
