@@ -25,6 +25,8 @@ To validate the steganographic optimization, we compared the standard BLS12-381 
 
 This breaks the traditional cryptographic trade-off: **BLS12-539+** delivers absolute high-end security while still operating **~17.4x faster** at the steganographic deobfuscation layer than the weaker, standard BLS12-381.
 
+**Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$ the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
+
 ### 🛡️ The High-Security Profile: BLS12-539+ & The "Genetic Link"
 To future-proof the protocol against exTNFS (Extended Tower Number Field Sieve) attacks, this repository also introduces the high-security **BLS12-539+** profile (featuring a massive 539-bit base field). 
 
@@ -62,7 +64,15 @@ For both curves, the optimal base equation resolves to $E: y^2 = x^3 + 1$. Becau
 
 The high-security BLS12-539+ profile inherits the exact same ultra-fast, small-integer 2-isogeny bridge as BLS12-479+, bypassing massive modular multiplications entirely. Its performance profile is theoretically strictly bounded by the trivial baseline arithmetic difference between 539-bit and 479-bit word additions, preserving the ~19x performance advantage over the standard BLS12-381 curve.
 
-**Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$ the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
+#### The Dual Jackpot: Native GLV Endomorphism Acceleration
+Beyond the steganographic advantages of the 2-isogeny bridge, the architectural choice of $E: y^2 = x^3 + 1$ (where $B=1$) natively unlocks a highly efficient Gallant-Lambert-Vanstone (GLV) endomorphism for accelerating core base arithmetic. 
+
+Because all BLS curves naturally satisfy $p \equiv 1 \pmod 3$, the 539-bit field $\mathbb{F}_p$ is guaranteed to contain a non-trivial cube root of unity $\beta$. This provides a nearly zero-cost map of the curve onto itself: $\phi(x, y) = (\beta x, y)$, which corresponds to multiplying the point by a specific scalar $\lambda$.
+
+During standard cryptographic operations (such as validator key generation or signing), any massive 539-bit scalar $k$ can be algorithmically decomposed into two ~270-bit halves ($k = k_1 + k_2\lambda$). When evaluated using Shamir's trick:
+$$kP = k_1P + k_2\phi(P).$$
+
+This GLV decomposition effectively **cuts the cost of scalar multiplication in half**. Thus, the $B=1$ parameter yields a "dual jackpot": it provides the trivial $x_0 = -1$ kernel for ultra-fast payload obfuscation, and the $\beta$ root for 50% faster base arithmetic, effortlessly absorbing the computational overhead of the massive 539-bit high-security field.
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
 
