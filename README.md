@@ -82,7 +82,7 @@ By contrast, the receiver performs zero probabilistic searching. Deobfuscation i
 
 In the context of decentralized consensus networks (such as the Ethereum Beacon Chain), this native asymmetry is not a flaw, but a highly desirable architectural feature:
 
-*   **One-to-Many Gossip Propagation:** A validator obfuscates a signature or public key only once (bearing the heavy Pick-and-Check and isogeny costs), but that packet must be received, deobfuscated, and verified by tens of thousands of nodes. The near-zero latency on the receiver end (<30 microseconds) ensures that the network does not choke on propagation delays during mass block broadcasting.
+*   **One-to-Many Gossip Propagation:** A validator obfuscates a signature or public key only once (bearing the heavy Pick-and-Check and isogeny costs), but that packet must be received, deobfuscated, and verified by tens of thousands of nodes. The near-zero latency on the receiver end ensures that the network does not choke on propagation delays during mass block broadcasting.
 *   **Light Client & IoT Synchronization:** Resource-constrained receivers (such as mobile wallets, browser clients, or IoT sensors) perform only trivial deterministic math. The heavy lifting of the probabilistic search is entirely offloaded to the powerful sender/validator.
 
 ### 🚧 The Direct SW Bottleneck
