@@ -62,7 +62,7 @@ For both curves, the optimal base equation resolves to $E: y^2 = x^3 + 1$. Becau
 
 **Breaking the Trade-off:** In classical cryptography, upgrading from a 381-bit to a 539-bit prime would incur a massive performance penalty. However, this genetic link guarantees that scaling up to BLS12-539+ imposes **zero additional algorithmic complexity** on the rational map evaluation. 
 
-The high-security BLS12-539+ profile inherits the exact same ultra-fast, small-integer 2-isogeny bridge as BLS12-479+, bypassing massive modular multiplications entirely. Its performance profile is theoretically strictly bounded by the trivial baseline arithmetic difference between 539-bit and 479-bit word additions, preserving the ~19x performance advantage over the standard BLS12-381 curve.
+The high-security BLS12-539+ profile inherits the exact same ultra-fast, small-integer 2-isogeny bridge as BLS12-479+, bypassing massive modular multiplications entirely. Its performance profile is theoretically strictly bounded by the trivial baseline arithmetic difference between 539-bit and 479-bit word additions, preserving the ~17x performance advantage over the standard BLS12-381 curve.
 
 #### The Dual Jackpot: Native GLV Endomorphism Acceleration
 Beyond the steganographic advantages of the 2-isogeny bridge, the architectural choice of $E: y^2 = x^3 + 1$ (where $B=1$) natively unlocks a highly efficient Gallant-Lambert-Vanstone (GLV) endomorphism for accelerating core base arithmetic. 
