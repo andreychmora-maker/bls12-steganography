@@ -69,13 +69,14 @@ function SHA256(msg_bytes)
     // 1. Padding
     Append(~m, 0x80); // Append '1' bit (followed by zeros)
     //while (#m mod 64) ne 56 do
-    while (ModByPowerOf2(#m, 6)) ne 56 do 
+    while ModByPowerOf2(#m, 6) ne 56 do 
         Append(~m, 0);
     end while;
 
     // Append length (64 bits, big-endian)
     for i in [7..0 by -1] do
-        Append(~m, (ml div (256^i)) mod 256);
+        //Append(~m, (ml div (256^i)) mod 256);
+        Append(~m, ModByPowerOf2(ShiftRight(ml, 8*i), 8));
     end for;
 
     // 2. Process blocks of 512 bits (64 bytes)
