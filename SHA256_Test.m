@@ -153,7 +153,7 @@ function BytesToHex(bytes)
     hex_chars := ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
     res := "";
     for b in bytes do
-        res cat:= hex_chars[(b div 16) + 1] cat hex_chars[(b mod 16) + 1];
+        res cat:= hex_chars[ShiftRight(b, 4) + 1] cat hex_chars[ModByPowerOf2(b, 4) + 1];
     end for;
     return res;
 end function;
