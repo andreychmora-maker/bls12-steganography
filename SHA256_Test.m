@@ -68,7 +68,8 @@ function SHA256(msg_bytes)
     
     // 1. Padding
     Append(~m, 0x80); // Append '1' bit (followed by zeros)
-    while (#m mod 64) ne 56 do
+    //while (#m mod 64) ne 56 do
+    while (ModByPowerOf2(#m, 6)) ne 56 do 
         Append(~m, 0);
     end while;
 
