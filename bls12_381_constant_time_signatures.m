@@ -68,13 +68,15 @@ function SHA256(msg_bytes)
     
     // 1. Padding
     Append(~m, 0x80); // Append '1' bit (followed by zeros)
-    while (#m mod 64) ne 56 do
+    //while (#m mod 64) ne 56 do
+    while ModByPowerOf2(#m, 6) ne 56 do 
         Append(~m, 0);
     end while;
 
     // Append length (64 bits, big-endian)
     for i in [7..0 by -1] do
-        Append(~m, (ml div (256^i)) mod 256);
+        //Append(~m, (ml div (256^i)) mod 256);
+        Append(~m, ModByPowerOf2(ShiftRight(ml, 8*i), 8));
     end for;
 
     // 2. Process blocks of 512 bits (64 bytes)
@@ -151,7 +153,7 @@ function BytesToHex(bytes)
     hex_chars := ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
     res := "";
     for b in bytes do
-        res cat:= hex_chars[(b div 16) + 1] cat hex_chars[(b mod 16) + 1];
+        res cat:= hex_chars[ShiftRight(b, 4) + 1] cat hex_chars[ModByPowerOf2(b, 4) + 1];
     end for;
     return res;
 end function;
