@@ -31,7 +31,7 @@ end function;
 function BasePreimage(P_target)
     x_t := P_target[1];
     
-    // 1. Вычисляем уменьшенный дискриминант: D = x_t^2 - x_t + 1
+    // 1. We calculate the reduced discriminant: D = x_t² - x_t + 1
     Delta_sub := x_t^2 - x_t + 1;
     
     if not IsSquare(Delta_sub) then 
@@ -40,11 +40,11 @@ function BasePreimage(P_target)
     
     root_sub := Sqrt(Delta_sub);
     
-    // 2. Битовые сдвиги (SHL 1) эмулируются сложением для избежания MUL
+    // 2. Bit shifts (SHL 1) are emulated using addition to avoid MUL
     x_t_shl1 := x_t + x_t;             // 2 * x_t
     root_shl1 := root_sub + root_sub;  // 2 * root_sub
     
-    // 3. Возвращаем 2*x_t + 1 + 2*root_sub
+    // 3. We return 2*x_t + 1 + 2*root_sub
     return true, x_t_shl1 + 1 + root_shl1; 
 end function;
 
