@@ -195,6 +195,6 @@ please cite the associated archive:
   year         = {2026},
   publisher    = {Zenodo},
   doi          = {10.5281/zenodo.22736944},
-  url          = {[https://doi.org/10.5281/zenodo.22736944](https://doi.org/10.5281/zenodo.22736944)}
+  url          = {[https://doi.org/10.5281/zenodo.19285755](https://doi.org/10.5281/zenodo.19285755)}
 }
 ```
