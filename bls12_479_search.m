@@ -1,8 +1,10 @@
-/* ===============================================================================
+/* 
+================================================================================
    Search for a steganographically optimal BLS12 curve (BLS12+)
    Objective: Find a seed x yielding a BLS12 curve with a cofactor divisible by L,
    while maintaining high pairing speed (sparse Hamming weight).
-================================================================================= */
+=================================================================================
+*/
 
 function FindStegoBLS12(start_seed, L, max_hw)
     x := start_seed;
