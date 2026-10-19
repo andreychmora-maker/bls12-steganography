@@ -44,8 +44,96 @@ x0_3 := 400240955522166739341778982573590415655688281993900788533205813612403165
 
 E_isog := EllipticCurve([F2| A_isog, B_isog]);
 
+// BLS parameter z
+z_bls := -0xd201000000010000;
+
 // ---------------------------------------------------------
-// 2. Helper Functions (Sgn0, CMOV, SqrtRatio)
+// 2. Helper Functions: Explicit Frobenius and Psi
+// ---------------------------------------------------------
+
+// Frobenius(x) = x^p
+// In basis {1, I} with I^2=-1 and p=3 mod 4, x^p = c0 - c1*I
+FrobeniusMap := function(val)
+    // Decompose val into c0 + c1*I
+    seq := Eltseq(val);
+    c0 := seq[1];
+    c1 := seq[2];
+    // Return conjugate: c0 - c1*I
+    return (F2!c0) - (F2!c1)*I;
+end function;
+
+/*
+// Calculate constants for Psi
+// c1 = 1 / (1 + I)^((p - 1) / 3)
+exp1 := (p - 1) div 3;
+psi_c1 := 1 / ( (1+I)^exp1 );
+
+// c2 = 1 / (1 + I)^((p - 1) / 2)
+exp2 := (p - 1) div 2;
+psi_c2 := 1 / ( (1+I)^exp2 );
+*/
+
+psi_c1 := F!40024095552216673926243104350066886439355031183055864382711713958\
+42971157480381377015405980053539358417135540939437*I;
+psi_c2 := F!10287321462351063499753244792157952773848399369297578961556431180\
+32610843298655225875571310552543014690878354869257*I +
+F!297367740898656104344246534652010887917204288300924998917641501809142080719\
+2182638567116318576472649347015917690530;
+
+//printf "Psi Constants:\nc1 = %o\nc2 = %o\n", psi_c1, psi_c2;
+
+// Endomorphism Psi(P)
+Psi := function(P)
+    if P eq E!0 then return E!0; end if;
+    
+    x := P[1];
+    y := P[2];
+    
+    // Apply map using Explicit Frobenius
+    x_new := psi_c1 * FrobeniusMap(x);
+    y_new := psi_c2 * FrobeniusMap(y);
+    
+    return E![x_new, y_new];
+end function;
+
+Psi2 := function(P)
+    return Psi(Psi(P));
+end function;
+
+// ---------------------------------------------------------
+// 3. Main Algorithm: Budroni-Pintore Formula
+// ---------------------------------------------------------
+ClearCofactor := function(P)
+    // Formula from prompt:
+    // t1 = z*P
+    // t2 = psi(P)
+    // t3 = 2*P
+    // t3 = psi2(t3)  -> 2*psi^2(P)
+    // t3 = t3 - t2   -> 2*psi^2(P) - psi(P)
+    // t2 = t1 + t2   -> zP + psi(P)
+    // t2 = z*t2      -> z^2 P + z psi(P)
+    // t3 = t3 + t2   -> 2*psi^2(P) - psi(P) + z^2 P + z psi(P)
+    // t3 = t3 - t1   -> 2*psi^2(P) + (z-1)psi(P) + z^2 P - zP
+    // Q = t3 - P     -> 2*psi^2(P) + (z-1)psi(P) + (z^2 - z - 1)P
+    
+    c1 := z_bls;
+    
+    t1 := c1 * P;
+    t2 := Psi(P);
+    t3 := 2 * P;
+    t3 := Psi2(t3);
+    t3 := t3 - t2;
+    t2 := t1 + t2;
+    t2 := c1 * t2;
+    t3 := t3 + t2;
+    t3 := t3 - t1;
+    Q := t3 - P;
+    
+    return Q;
+end function;
+
+// ---------------------------------------------------------
+// 4. Helper Functions (Sgn0, CMOV, SqrtRatio)
 // ---------------------------------------------------------
 function Sgn0(u)
     seq := ElementToSequence(u);
@@ -70,7 +158,7 @@ function SqrtRatio(u, v)
 end function;
 
 // ---------------------------------------------------------
-// 3. SSWU Map & Inversion in F_p2
+// 5. SSWU Map & Inversion in F_p2
 // ---------------------------------------------------------
 function SSWUHash2Point(u)
     tv1 := u^2;
@@ -166,7 +254,7 @@ function BasePreimage(P_val)
 end function;
 
 // ---------------------------------------------------------
-// 4. Backward & Forward Maps for G2 Isogeny
+// 6. Backward & Forward Maps for G2 Isogeny
 // ---------------------------------------------------------
 function EvaluateBackwardMap(P)
     if P eq E_target!0 then return E_isog!0; end if;
@@ -237,7 +325,7 @@ function EvaluateForwardMap(Q)
 end function;
 
 // ---------------------------------------------------------
-// 5. Full Pipeline: Obfuscation & Deobfuscation (G2)
+// 7. Full Pipeline: Obfuscation & Deobfuscation (G2)
 // ---------------------------------------------------------
 
 function ObfuscatePublicKeyG2(P_target)
@@ -279,20 +367,21 @@ function DeobfuscatePublicKeyG2(u, v)
     P_target_raw := EvaluateForwardMap(P_sum);    
     
     // Step 3: Cofactor Clearing on G2 target point[cite: 1, 2]
-    PublicKey_target := Cofactor * (E_target!P_target_raw);
-    
+    //PublicKey_target := Cofactor * (E_target!P_target_raw);
+    PublicKey_target := ClearCofactor (E_target!P_target_raw);
     return PublicKey_target, P_sum;
 end function;
 
 // ---------------------------------------------------------
-// 6. Runtime Test & Verification
+// 8. Runtime Test & Verification
 // ---------------------------------------------------------
 printf "\n--- Testing G2 Obfuscation Pipeline ---\n";
 
 // Generate a valid G2 point on the target curve
 P_in := Cofactor * Random(E_target);
 while P_in eq Identity do 
-    P_in := Cofactor * Random(E_target); 
+    //P_in := Cofactor * Random(E_target);
+    P_in := ClearCofactor (Random(E_target));
 end while;
 
 printf "Original G2 Public Key:\n%o\n\n", P_in;
@@ -308,7 +397,8 @@ P_out, P_isog_rec := DeobfuscatePublicKeyG2(u, v);
 printf "Reconstructed G2 Public Key:\n%o\n\n", P_out;
 
 // Verification via Isogenous Bridge (closing the loop securely)
-if (Cofactor * P_isog_rec) eq (Cofactor * P_isog_orig) then
+//if (Cofactor * P_isog_rec) eq (Cofactor * P_isog_orig) then
+if (ClearCofactor (P_isog_rec)) eq (ClearCofactor (P_isog_orig)) then
     printf "SUCCESS: G2 pipeline logic is perfectly closed on the isogenous bridge!\n";
 else
     printf "FAIL: G2 Reconstruction mismatch!\n";
