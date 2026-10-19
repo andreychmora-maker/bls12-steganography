@@ -93,7 +93,7 @@ Psi := function(P)
     x_new := psi_c1 * FrobeniusMap(x);
     y_new := psi_c2 * FrobeniusMap(y);
     
-    return E![x_new, y_new];
+    return E_target![x_new, y_new];
 end function;
 
 Psi2 := function(P)
