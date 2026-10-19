@@ -7,7 +7,8 @@ using Elligator Squared and Explicit Inverse Isogenies.
 This script implements the complete end-to-end obfuscation and deobfuscation 
 workflow for the BLS12-381 G_1 group. It incorporates:
   1. Inverse isogeny mapping via an E_isog bridge.
-  2. Subgroup Membership Leakage protection (Cofactor Blinding & Clearing).
+  2. Subgroup Membership Leakage protection using Fast Cofactor Clearing (FCC) 
+     via the 65-bit scalar (1-z) and corresponding tailored cofactor blinding.
   3. Preimage extraction using the Elligator Squared pick-and-check method.
   4. Full cycle empirical benchmarks (Clock Cycles).
 
