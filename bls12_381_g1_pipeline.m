@@ -1,11 +1,37 @@
-/* Obfuscation of the public key of BLS signature scheme 
-using Elligator Squared. */
-/*
-In Ethereum 2.0 (Eth2 for short), BLS public keys are elliptic curve points from the BLS12-381 G_1 group, thus are 48 bytes long when compressed.
-Public key serves as both the unique identity of the validator and the means of cryptographically verifying messages purporting to have been signed by it. The public key is stored raw, unlike in Eth1, where it is hashed to form the account address. This allows public keys to be aggregated for verifying aggregated attestations.
-To verify a signature we need to know the public key of the validator that signed it. Every validator's public key is stored in the beacon state and can be simply looked up via the validator's index which, by design, is always available by some means whenever it's required.
-Signature verification can be treated as a black-box: we send the message, the public key, and the signature to the verifier; if after some cryptographic magic the signature matches both the public key and the message then we declare it valid. Otherwise, either the signature is corrupt, the incorrect secret key was used, or the message is not what was signed.
-To verify an aggregate signature, we need an aggregate public key. As long as we know exactly which validators signed the original message, this is equally easy to construct. Once again, we simply "add up" the public keys of the signers. This time the addition is the group operation of the G_1 elliptic curve group, and the result will also be a member of the G_1 group, so it is mathematically indistinguishable from a non-aggregated public key, and has the same 48 byte size. So aggregation of public keys is simply group addition in the G_1 group.
+/* 
+===========================================================================
+Full Pipeline for Obfuscation of the BLS Signature Scheme Public Key 
+using Elligator Squared and Explicit Inverse Isogenies.
+===========================================================================
+
+This script implements the complete end-to-end obfuscation and deobfuscation 
+workflow for the BLS12-381 G_1 group. It incorporates:
+  1. Inverse isogeny mapping via an E_isog bridge.
+  2. Subgroup Membership Leakage protection (Cofactor Blinding & Clearing).
+  3. Preimage extraction using the Elligator Squared pick-and-check method.
+  4. Full cycle empirical benchmarks (Clock Cycles).
+
+Context:
+In Ethereum 2.0 (Eth2 for short), BLS public keys are elliptic curve points 
+from the BLS12-381 G_1 group, thus are 48 bytes long when compressed.
+The public key serves as both the unique identity of the validator and the 
+means of cryptographically verifying messages purporting to have been signed 
+by it. The public key is stored raw, unlike in Eth1, where it is hashed to 
+form the account address. This allows public keys to be aggregated for 
+verifying aggregated attestations.
+
+To verify a signature, we need to know the public key of the validator that 
+signed it. Every validator's public key is stored in the beacon state and 
+can be looked up via the validator's index. Signature verification can be 
+treated as a black-box: we send the message, the public key, and the signature 
+to the verifier; if after some cryptographic magic the signature matches both 
+the public key and the message, then we declare it valid. 
+
+To verify an aggregate signature, we need an aggregate public key. As long as 
+we know exactly which validators signed the original message, we simply "add up" 
+the public keys of the signers (group addition in G_1). The result is 
+mathematically indistinguishable from a non-aggregated public key and has the 
+same 48-byte size.
 */
 
 // The prime field for BLS12-381 (381 bits, prime)
