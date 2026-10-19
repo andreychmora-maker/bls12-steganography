@@ -84,7 +84,7 @@ F!297367740898656104344246534652010887917204288300924998917641501809142080719\
 
 // Endomorphism Psi(P)
 Psi := function(P)
-    if P eq E!0 then return E!0; end if;
+    if P eq E_target!0 then return E_target!0; end if;
     
     x := P[1];
     y := P[2];
