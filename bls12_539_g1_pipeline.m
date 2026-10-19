@@ -184,7 +184,7 @@ printf "\nRunning %o iterations for benchmark...\n", NumberOfAttempts;
 
 for i in [1..NumberOfAttempts] do
     t := ClockCycles(); 
-    u_b, v_b, pu_b, pv_b, _ := ObfuscatePublicKey(SecretKey, PublicKey_target_orig);
+    _, _, pu_b, pv_b, _ := ObfuscatePublicKey(SecretKey, PublicKey_target_orig);
     ObfuscateCls +:= (ClockCycles() - t);
 
     t := ClockCycles(); 
