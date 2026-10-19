@@ -6,10 +6,10 @@ using Elligator Squared and Explicit Inverse Isogenies.
 
 This script implements the complete end-to-end obfuscation and deobfuscation 
 workflow for the BLS12-381 G_2 group over extension field F_p2. It incorporates:
-  1. Inverse isogeny mapping via an E_isog bridge for G2[cite: 2].
-  2. Subgroup Membership Leakage protection using Cofactor Blinding & Clearing[cite: 1, 2].
-  3. Preimage extraction using the Elligator Squared pick-and-check method in F_p2[cite: 2].
-  4. Fast Cofactor Clearing (Budroni-Pintore formula)[cite: 1].
+  1. Inverse isogeny mapping via an E_isog bridge for G2.
+  2. Subgroup Membership Leakage protection using Cofactor Blinding & Clearing.
+  3. Preimage extraction using the Elligator Squared pick-and-check method in F_p2.
+  4. Fast Cofactor Clearing (Budroni-Pintore formula).
 */
 
 // ---------------------------------------------------------
