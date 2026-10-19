@@ -74,37 +74,34 @@ end function;
 
 /*
 ----------------------------------------------------------------
-REAL PIPELINE SETUP (Cofactor Blinding & Clearing)
+REAL PIPELINE SETUP (Fast Cofactor Blinding & Clearing)
 ----------------------------------------------------------------
 */
 
-// Since we use the Dual Isogeny, phi(phi_hat(P)) = [2]P. 
-// We embed this L=2 multiplier directly into the sender's scalar.
+// Fast Cofactor clearing scalar |z - 1| for G1
+FastCofactor := Abs(z_val - 1);
+
+// 1. Calculate the scalar for the sender: (2 * FastCofactor)^(-1) mod q
 L := 2;
-cof_mod_q := Cofactor mod q;
-ScalarFactor := (L * cof_mod_q) mod q;
+fc_mod_q := FastCofactor mod q;
+ScalarFactor := (L * fc_mod_q) mod q;
 InvScalar := Integers()!( (Integers(q)!ScalarFactor)^-1 );
 
-// Exact scalar to generate (Cofactor)-torsion blinding points
-BlindScalar := q; 
+// 2. Define the exact scalar to generate FastCofactor-annihilated blinding points
+BlindScalar := q * (FastCofactor div 3); 
 
 /*
   SENDER PIPELINE (OBFUSCATION):
 */
 function ObfuscatePublicKey(SecretKey, PublicKey_target)
-    // Step 1: Pre-scaling by (2 * Cofactor)^-1 mod q
     P_scaled := InvScalar * PublicKey_target;
-
-    // Step 2: Backward map using dual isogeny
     P_isog_base := EvaluateBackwardMap(P_scaled); 
 
-    // Step 3: Cofactor Blinding 
+    // Cofactor Blinding mathematically tuned for FastCofactor
     R_cof := BlindScalar * Random(E_isog);
     P_isog := P_isog_base + R_cof;
 
-    // Step 4: Pick-and-Check loop
     while true do
-        // Simulating the exact algebraic behavior of Elligator Squared
         P_u_isog := Random(E_isog); 
         P_v_isog := P_isog - P_u_isog;
         
@@ -121,15 +118,11 @@ end function;
   RECEIVER PIPELINE (DEOBFUSCATION):
 */
 function DeobfuscatePublicKey(P_u_isog, P_v_isog)
-    // Step 1: Reconstruct the sum on E_isog (u + v)
     P_isog := P_u_isog + P_v_isog;
-    
-    // Step 2: Forward 2-isogeny to the target curve
     P_target_raw := Isogeny2Target(P_isog);
 
-    // Step 3: Cofactor Clearing
-    // Annihilates the sender's R_cof blinding and extracts the exact Key
-    PublicKey_target := Cofactor * (E_target!P_target_raw);
+    // Step 3: Fast Cofactor Clearing (Extremely Fast Scalar)
+    PublicKey_target := FastCofactor * (E_target!P_target_raw);
     
     return PublicKey_target, P_isog;
 end function;
@@ -173,7 +166,7 @@ end if;
 Benchmarks
 ----------------------------------------------------------------
 */
-NumberOfAttempts := 10000; 
+NumberOfAttempts := 100000;
 ObfuscateCls := 0; 
 DeObfuscateCls := 0; 
 
