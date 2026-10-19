@@ -169,7 +169,7 @@ end if;
 Benchmarks
 ----------------------------------------------------------------
 */
-NumberOfAttempts := 1000;
+NumberOfAttempts := 100000;
 ObfuscateCls := 0; 
 DeObfuscateCls := 0; 
 
