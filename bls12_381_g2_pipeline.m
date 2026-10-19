@@ -397,8 +397,7 @@ P_out, P_isog_rec := DeobfuscatePublicKeyG2(u, v);
 printf "Reconstructed G2 Public Key:\n%o\n\n", P_out;
 
 // Verification via Isogenous Bridge (closing the loop securely)
-//if (Cofactor * P_isog_rec) eq (Cofactor * P_isog_orig) then
-if (ClearCofactor (P_isog_rec)) eq (ClearCofactor (P_isog_orig)) then
+if (Cofactor * P_isog_rec) eq (Cofactor * P_isog_orig) then
     printf "SUCCESS: G2 pipeline logic is perfectly closed on the isogenous bridge!\n";
 else
     printf "FAIL: G2 Reconstruction mismatch!\n";
