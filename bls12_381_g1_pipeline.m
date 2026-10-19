@@ -305,29 +305,37 @@ end function;
 
 /*
 ----------------------------------------------------------------
-REAL PIPELINE BENCHMARK (With Cofactor Blinding/Clearing)
+REAL PIPELINE BENCHMARK (With Fast Cofactor Blinding/Clearing)
 ----------------------------------------------------------------
 */
 
-// 1. Calculate the scalar for the sender: (11 * h)^(-1) mod q
-// Using the Integers(q) ring ensures no Modinverse function errors
-h_mod_q := Cofactor mod q;
-ScalarFactor := (11 * h_mod_q) mod q;
+// Fast Cofactor clearing scalar (1 - z) for G1
+FastCofactor := 1 - z;
+
+// 1. Calculate the scalar for the sender: (11 * FastCofactor)^(-1) mod q
+// We use FastCofactor instead of the full 126-bit h.
+fc_mod_q := FastCofactor mod q;
+ScalarFactor := (11 * fc_mod_q) mod q;
 InvScalar := Integers()!( (Integers(q)!ScalarFactor)^-1 );
+
+// 2. Define the exact scalar to generate (1-z)-torsion blinding points.
+// Since full order N = q * (1-z)^2 / 3, dividing by (1-z) gives the multiplier:
+BlindScalar := q * (FastCofactor div 3);
 
 /*
   SENDER PIPELINE (OBFUSCATION):
-  In real deployments: PublicKey_target -> multiply by InvScalar -> inverse isogeny -> + R_cof -> Pick-and-Check
 */
 function ObfuscatePublicKey(SecretKey, PublicKey_target)
-    // Step 1: Scalar multiplication (accounting for computational cost)
+    // Step 1: Scalar multiplication
     P_scaled := InvScalar * PublicKey_target;
 
-    // Step 2: Simulate inverse isogeny (same computational cost as scalar multiplication)
+    // Step 2: Simulate inverse isogeny
     P_isog_base := (InvScalar * SecretKey) * G_isog; 
 
-    // Step 3: Cofactor Blinding (Protection against Subgroup Membership Leakage)
-    R_cof := q * Random(E_isog);
+    // Step 3: Fast Cofactor Blinding 
+    // We strictly blind within the (1-z)-torsion subgroup.
+    // This guarantees the receiver's 65-bit scalar will mathematically annihilate it.
+    R_cof := BlindScalar * Random(E_isog);
     P_isog := P_isog_base + R_cof;
 
     // Step 4: Pick-and-Check loop for Elligator Squared
@@ -337,22 +345,26 @@ function ObfuscatePublicKey(SecretKey, PublicKey_target)
         P_v := P_isog - P_u;
         Success, v := BasePreimage(P_v);
         if Success then
-            return Integers()!u, Integers()!v, P_isog_base; // Return P_isog_base for verification
+            return Integers()!u, Integers()!v, P_isog_base;
         end if;
     end while;
 end function;
 
 /*
   RECEIVER PIPELINE (DEOBFUSCATION):
-  (u, v) -> SSWU forward maps -> forward isogeny -> cofactor clearing
 */
 function DeobfuscatePublicKey(u, v)
+    // Step 1: Reconstruct the sum on E_isog
     P_u_isog := E_isog!SSWUHash2Point(u);
     P_v_isog := E_isog!SSWUHash2Point(v);
     P_isog   := P_u_isog + P_v_isog;
     
+    // Step 2: Forward isogeny to the target curve
     P_target_raw := Isogeny2Target(P_isog);
-    PublicKey_target := Cofactor * (E_target!P_target_raw);
+
+    // Step 3: Fast Cofactor Clearing
+    // Multiply by the 65-bit FastCofactor (1-z) instead of the 126-bit h.
+    PublicKey_target := FastCofactor * (E_target!P_target_raw);
     
     return PublicKey_target, P_isog;
 end function;
@@ -365,7 +377,7 @@ Runtime Test & Verification
 printf "Target Curve:    %o\n", E_target;
 printf "Isogenous Curve: %o\n", E_isog;
 
-printf "\n--- Testing Real Pipeline ---\n";
+printf "\n--- Testing Real Pipeline (Fast Cofactor) ---\n";
 
 SecretKey := Random(1, q-1);
 PublicKey_target_orig := SecretKey * G_target;
@@ -374,13 +386,12 @@ printf "Obfuscating (running pick-and-check with cofactor blinding)...\n";
 u, v, P_isog_orig := ObfuscatePublicKey(SecretKey, PublicKey_target_orig);
 printf "   Found u: %o\n   Found v: %o\n\n", u, v;
 
-printf "Deobfuscating (SSWU + Forward Isogeny + Cofactor Clearing)...\n";
+printf "Deobfuscating (SSWU + Forward Isogeny + FCC)...\n";
 PublicKey_recovered, P_isog_rec := DeobfuscatePublicKey(u, v);
 
-// Since we simulated phi^-1, we verify that the obfuscator and deobfuscator
-// converge on the isogenous curve after cofactor clearing:
-if (Cofactor * P_isog_rec) eq (Cofactor * P_isog_orig) then
-    printf "SUCCESS: Pipeline logic is perfectly closed on the isogenous bridge!\n";
+// Verify convergence using the FastCofactor
+if (FastCofactor * P_isog_rec) eq (FastCofactor * P_isog_orig) then
+    printf "SUCCESS: Pipeline logic closed perfectly using Fast Cofactor (1-z)!\n";
 else
     printf "FAIL: Reconstruction mismatch!\n";
     quit;
@@ -409,4 +420,4 @@ end for;
 
 print "\n__________________ Pipeline Clock Cycles ___________________";
 printf "Obfuscation (InvScalar + Isog + Blinding + Elligator): %o\n", ObfuscateCls div NumberOfAttempts;
-printf "Deobfuscation (SSWU + ForwardIsog + Cofactor Clearing): %o\n", DeObfuscateCls div NumberOfAttempts;
+printf "Deobfuscation (SSWU + ForwardIsog + FCC 1-z): %o\n", DeObfuscateCls div NumberOfAttempts;
