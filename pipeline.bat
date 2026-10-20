@@ -1,0 +1,1 @@
+/Applications/Magma/magma bls12_381_g1_pipeline.m | tee bls12_381_g1_pipeline.log ; /Applications/Magma/magma bls12_479_g1_pipeline.m | tee bls12_479_g1_pipeline.log ; /Applications/Magma/magma bls12_539_g1_pipeline.m | tee bls12_539_g1_pipeline.log
