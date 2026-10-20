@@ -9,21 +9,23 @@ This repository provides the open-source Magma computational algebra scripts acc
 
 **Unified Benchmark Environment:** All empirical simulations and cycle counts presented in this repository were evaluated on a single hardware and software platform: a 2.7 GHz Quad-Core Intel Core i7 (MacBookPro13,3) with 16 GB RAM, running the Magma Computational Algebra System (V2.29-6).
 
-### 🌉 Isogeny Bridge: Minimizing the High-Security Penalty
+### 🌉 Isogeny Bridge: Breaking the Security-Performance Trade-off
 
-To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed high-security curves within the **Elligator Squared** framework. The benchmarks below reflect the **full transport pipeline**, including scalar scaling, exact cofactor blinding, inverse isogeny mappings, and the Elligator pick-and-check loop.
+To validate the steganographic optimization, we compared the standard BLS12-381 curve (which mathematically mandates an 11-isogeny bridge) against our proposed high-security curves within the **Elligator Squared** framework. The benchmarks below reflect the **full transport pipeline**, including exact Fast Cofactor blinding/clearing, inverse isogeny mappings, and the Elligator pick-and-check loop.
 
 | Curve | Isogeny Degree | Obfuscation (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | BLS12-381 (Baseline) | 11-isogeny | ~14,281,000 cycles | ~2,667,000 cycles | 381-bit | ~128-bit |
-| **BLS12-479+** | 2-isogeny | ~18,015,000 cycles | ~3,987,000 cycles | 479-bit | ~160-bit |
-| *Scaling Cost (479+)* | | *~1.26x Penalty* | *~1.49x Penalty* | *+98 bits* | *+32 bits* |
-| **BLS12-539+** (Optimal)| 2-isogeny | **~22,523,000 cycles**| **~5,020,000 cycles** | 539-bit | **~192-bit** |
-| *Scaling Cost (539+)* | | *~1.57x Penalty* | *~1.88x Penalty* | *+158 bits* | *+64 bits* |
+| **BLS12-479+** | 2-isogeny | ~19,971,000 cycles | **~1,836,000 cycles** | 479-bit | **~160-bit** |
+| *Gain (479+ vs 381)* | | *~1.39x Slower* | ***~1.45x Faster*** | *+98 bits* | *+32 bits* |
+| **BLS12-539+** (Optimal)| 2-isogeny | ~25,318,000 cycles | **~2,331,000 cycles** | 539-bit | **~192-bit** |
+| *Gain (539+ vs 381)* | | *~1.77x Slower* | ***~1.14x Faster*** | *+158 bits* | *+64 bits* |
 
-**The Genetic Link Bonus:** Scaling from a 381-bit to a massive 539-bit base field to achieve ~192-bit security (and immunity against exTNFS attacks) normally incurs a crippling performance penalty due to the significantly heavier modular arithmetic. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to the exact same trivial small-integer constants ($A'=-15, B'=22$). 
+**The Genetic Link Bonus & The Receiver Advantage:** Scaling from a 381-bit to a massive 539-bit base field normally incurs a strict performance penalty due to drastically heavier modular arithmetic. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to a trivial 2-isogeny ($A'=-15, B'=22$). 
 
-This massively softens the traditional cryptographic trade-off: **BLS12-539+** delivers absolute high-end security with only a nominal ~1.57x to ~1.88x computational penalty compared to the standard 128-bit curve. The trivial 2-isogeny bridge effectively absorbs the heavy cost of scaling the field size, bypassing the catastrophic slowdowns that traditional curve scaling would dictate.
+This fundamentally shatters the traditional cryptographic trade-off. While the sender pays a mathematically expected scaling penalty to obfuscate the payload in a larger field, the 2-isogeny evaluation is so exceptionally lightweight that it completely overpowers the base field arithmetic slowdown for the receiver. 
+
+**The ultimate result:** The optimally secure BLS12-539+ profile delivers absolute 192-bit high-end security and exTNFS immunity, yet operates **~1.14x faster** at the steganographic deobfuscation layer than the drastically weaker, standard BLS12-381 curve.
 
 **Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$, the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
 
