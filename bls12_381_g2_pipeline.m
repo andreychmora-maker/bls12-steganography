@@ -402,3 +402,4 @@ if (Cofactor * P_isog_rec) eq (Cofactor * P_isog_orig) then
 else
     printf "FAIL: G2 Reconstruction mismatch!\n";
 end if;
+quit;
