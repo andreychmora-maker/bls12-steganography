@@ -421,3 +421,4 @@ end for;
 print "\n__________________ Pipeline Clock Cycles ___________________";
 printf "Obfuscation (InvScalar + Isog + Blinding + Elligator): %o\n", ObfuscateCls div NumberOfAttempts;
 printf "Deobfuscation (SSWU + ForwardIsog + FCC 1-z): %o\n", DeObfuscateCls div NumberOfAttempts;
+quit;
