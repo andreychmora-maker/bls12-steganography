@@ -23,7 +23,7 @@ To isolate the absolute algebraic efficiency of the isogeny bridges and remove t
 | **BLS12-539+** (Optimal)| 2-isogeny | **~25,244,000 cycles** | **~2,318,000 cycles** | 539-bit | **~192-bit** |
 | *Gain (539+ vs 381)* | | ***~1.05x Faster*** | ***~1.15x Faster*** | *+158 bits* | *+64 bits* |
 
-**The Genetic Link Bonus & The Total Advantage:** Scaling from a 381-bit to a massive 539-bit base field normally incurs a strict performance penalty due to drastically heavier modular arithmetic. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to a trivial 2-isogeny ($A'=-15, B'=22$). 
+**The Genetic Link Bonus & The Total Advantage:** Scaling from a 381-bit to a massive 539-bit base field normally incurs a strict performance penalty due to drastically heavier modular arithmetic. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to a trivial 2-isogeny  ($A'=-15, B'=22$). 
 
 This fundamentally shatters the traditional cryptographic trade-off. The 2-isogeny evaluation and the simplified point arithmetic are so exceptionally lightweight that they completely overpower the base field arithmetic slowdown for **both** the sender and the receiver. The sender pays zero scaling penalty for the base algebraic cost. 
 
