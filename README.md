@@ -13,22 +13,21 @@ This repository provides the open-source Magma computational algebra scripts acc
 
 To isolate the absolute algebraic efficiency of the isogeny bridges and remove the variance of probabilistic sampling, the benchmarks below represent the **core base cost of a single deterministic pipeline execution**. 
 
-*(Note: In a production constant-time deployment, the Sender's obfuscation step must be wrapped in a fixed loop executed exactly $N$ times to prevent timing side-channels, scaling the absolute obfuscation cost by $N$. The Receiver's deobfuscation remains exactly 1 iteration.)*
+*(Note: In a production constant-time deployment, the Sender's obfuscation step must be wrapped in a fixed loop executed exactly N times to prevent timing side-channels, scaling the absolute obfuscation cost by N. The Receiver's deobfuscation remains exactly 1 iteration.)*
 
 | Curve | Isogeny Degree | Obfuscation Base Cost (Sender) | Deobfuscation (Receiver) | Base Field | Security Level |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| BLS12-381 (Baseline) | 11-isogeny | ~X,XXX,XXX cycles | ~2,667,000 cycles | 381-bit | ~128-bit |
-| **BLS12-479+** | 2-isogeny | ~X,XXX,XXX cycles | **~1,836,000 cycles** | 479-bit | **~160-bit** |
-| *Gain (479+ vs 381)* | | *TBD* | ***~1.45x Faster*** | *+98 bits* | *+32 bits* |
-| **BLS12-539+** (Optimal)| 2-isogeny | ~X,XXX,XXX cycles | **~2,331,000 cycles** | 539-bit | **~192-bit** |
-| *Gain (539+ vs 381)* | | *TBD* | ***~1.14x Faster*** | *+158 bits* | *+64 bits* |
+| BLS12-381 (Baseline) | 11-isogeny | ~26,433,000 cycles | ~2,667,000 cycles | 381-bit | ~128-bit |
+| **BLS12-479+** | 2-isogeny | **~19,952,000 cycles** | **~1,842,000 cycles** | 479-bit | **~160-bit** |
+| *Gain (479+ vs 381)* | | ***~1.32x Faster*** | ***~1.45x Faster*** | *+98 bits* | *+32 bits* |
+| **BLS12-539+** (Optimal)| 2-isogeny | **~25,244,000 cycles** | **~2,318,000 cycles** | 539-bit | **~192-bit** |
+| *Gain (539+ vs 381)* | | ***~1.05x Faster*** | ***~1.15x Faster*** | *+158 bits* | *+64 bits* |
 
-**The Genetic Link Bonus & The Receiver Advantage:** Scaling from a 381-bit to a massive 539-bit base field normally incurs a strict performance penalty due to drastically heavier modular arithmetic. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to a trivial 2-isogeny
-($A'=-15, B'=22$). 
+**The Genetic Link Bonus & The Total Advantage:** Scaling from a 381-bit to a massive 539-bit base field normally incurs a strict performance penalty due to drastically heavier modular arithmetic. However, because our proposed curves share the optimal $E: y^2 = x^3 + 1$ architecture, their rational maps reduce to a trivial 2-isogeny ($A'=-15, B'=22$). 
 
-This fundamentally shatters the traditional cryptographic trade-off. While the sender pays a mathematically expected scaling penalty to obfuscate the payload in a larger field, the 2-isogeny evaluation is so exceptionally lightweight that it completely overpowers the base field arithmetic slowdown for the receiver. 
+This fundamentally shatters the traditional cryptographic trade-off. The 2-isogeny evaluation and the simplified point arithmetic are so exceptionally lightweight that they completely overpower the base field arithmetic slowdown for **both** the sender and the receiver. The sender pays zero scaling penalty for the base algebraic cost. 
 
-**The ultimate result:** The optimally secure BLS12-539+ profile delivers absolute 192-bit high-end security and exTNFS immunity, yet operates **~1.14x faster** at the steganographic deobfuscation layer than the drastically weaker, standard BLS12-381 curve.
+**The ultimate result:** The optimally secure BLS12-539+ profile delivers absolute 192-bit high-end security and exTNFS immunity, yet operates **~1.15x faster** at the steganographic deobfuscation layer and **~1.05x faster** at the base obfuscation layer than the drastically weaker, standard BLS12-381 curve.
 
 **Full Signature Obfuscation ($\mathbb{G}_2$):** While the strictly even cofactor provides an ultra-efficient 2-isogeny bridge for $\mathbb{G}_1$, the structure of the sextic twist over $\mathbb{F}_q$, $q=p^2$ inherently supports an analogous low-degree isogeny bridge for $\mathbb{G}_2$ (paralleling the 3-isogeny in our BLS12-381 implementation). This guarantees complete, low-latency steganographic coverage for both public keys and aggregated signatures.
 
@@ -74,9 +73,9 @@ During standard cryptographic operations (such as validator key generation or si
 
 ### ⚖️ The Asymmetric Advantage of Steganographic Transport
 
-The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). For the sender, the full obfuscation cost is substantial (~14.2M to ~22.5M cycles), as the probabilistic Pick-and-Check loop must be executed in addition to the isogeny mapping and exact cofactor blinding. 
+The empirical benchmarks reveal a massive computational asymmetry between the sender (obfuscation) and the receiver (deobfuscation). For the sender, the full obfuscation cost is substantial, as the probabilistic Pick-and-Check loop must be executed sequentially $N$ times in addition to the isogeny mapping and exact cofactor blinding. 
 
-By contrast, the receiver performs zero probabilistic searching. Deobfuscation is a single, deterministic straight-line execution requiring only ~2.6M to ~5.0M cycles.
+By contrast, the receiver performs zero probabilistic searching. Deobfuscation is a single, deterministic straight-line execution requiring only ~1.8M to ~2.6M cycles.
 
 In the context of decentralized consensus networks (such as the Ethereum Beacon Chain), this native asymmetry is not a flaw, but a highly desirable architectural feature:
 
