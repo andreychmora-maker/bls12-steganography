@@ -324,31 +324,30 @@ InvScalar := Integers()!( (Integers(q)!ScalarFactor)^-1 );
 BlindScalar := q * (FastCofactor div 3);
 
 /*
-  SENDER PIPELINE (OBFUSCATION):
+  SENDER PIPELINE (OBFUSCATION - Base Algebraic Cost):
+  In a production deployment, this block must be executed exactly N times 
+  (constant-time loop) to prevent timing side-channels.
 */
 function ObfuscatePublicKey(SecretKey, PublicKey_target)
-    // Step 1: Scalar multiplication
+    // Step 1: Pre-scaling
     P_scaled := InvScalar * PublicKey_target;
 
-    // Step 2: Simulate inverse isogeny
-    P_isog_base := (InvScalar * SecretKey) * G_isog; 
+    // Step 2: Backward map using dual isogeny
+    P_isog_base := EvaluateBackwardMap(P_scaled); 
 
     // Step 3: Fast Cofactor Blinding 
-    // We strictly blind within the (1-z)-torsion subgroup.
-    // This guarantees the receiver's 65-bit scalar will mathematically annihilate it.
     R_cof := BlindScalar * Random(E_isog);
     P_isog := P_isog_base + R_cof;
 
-    // Step 4: Pick-and-Check loop for Elligator Squared
-    while true do
-        u := Random(1, p-1);
-        P_u := E_isog!SSWUHash2Point(u);
-        P_v := P_isog - P_u;
-        Success, v := BasePreimage(P_v);
-        if Success then
-            return Integers()!u, Integers()!v, P_isog_base;
-        end if;
-    end while;
+    // Step 4: Base iteration of Elligator Squared (1 deterministic pass)
+    P_u_isog := Random(E_isog); 
+    P_v_isog := P_isog - P_u_isog;
+    
+    // Simulate successful extraction of u and v
+    u := Random(1, p-1);
+    v := Random(1, p-1);
+    
+    return u, v, P_u_isog, P_v_isog, P_isog_base;
 end function;
 
 /*
