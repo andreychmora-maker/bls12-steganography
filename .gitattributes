@@ -1,1 +1,1 @@
-*.m linguist-language=Modelica
+*.m, *.txt linguist-language=Modelica
