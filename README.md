@@ -177,7 +177,7 @@ magma SHA256_Test.m
 If you utilize these scripts or the BLS12-479+ curve parameters in your research,
 please cite the associated archive:
 
-```bash
+```bibtex
 @misc{chmora2026bls12steganography,
   author       = {Andrey Chmora},
   title        = {Steganographic Point Obfuscation via Explicit Inverse Isogenies for $j \in \{0, 1728\}$},
@@ -187,4 +187,3 @@ please cite the associated archive:
   doi          = {10.5281/zenodo.22736944},
   url          = {[https://doi.org/10.5281/zenodo.19285755](https://doi.org/10.5281/zenodo.19285755)}
 }
-```
